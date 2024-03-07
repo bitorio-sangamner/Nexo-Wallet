@@ -8,7 +8,7 @@ import java.util.List;
 @Component
 public interface UserService {
 
-    UserDto createUser(UserDto user);
+    UserDto registerUser(UserDto user) throws Exception;
     UserDto getUserByEmail(String email);
     List<UserDto> getAllUsers();
 
