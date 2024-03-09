@@ -36,8 +36,8 @@ public class UserDto {
     )
     private String password;
 
-    @NotEmpty
-    @Size(min=4,message="Pin should be of 4 chars")
-    @Pattern(regexp = "\\d{4}", message = "Pin should be exactly 4 digits")
+//    @NotEmpty
+//    @Size(min=4,message="Pin should be of 4 chars")
+//    @Pattern(regexp = "\\d{4}", message = "Pin should be exactly 4 digits")
     private String pin;
 }

@@ -5,12 +5,14 @@ import com.authentication.payloads.UserDto;
 import com.authentication.repositories.UserRepository;
 import com.authentication.services.UserService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.authentication.exceptions.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,6 +22,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Override
     public UserDto registerUser(UserDto userDto)  {
 
@@ -35,6 +39,51 @@ public class UserServiceImpl implements UserService {
         User savedUser=this.userRepository.save(user);
 
         return this.userToDto(savedUser);
+    }
+
+    @Override
+    public String setPin(String email, String pin) {
+        try {
+            User user = userRepository.findByEmail(email);
+            if (user != null) {
+                user.setPin(pin);
+                userRepository.save(user);
+                return "Pin set successfully!";
+            } else {
+                return "User not found with email: " + email;
+            }
+        } catch (Exception e) {
+            // Log the exception for debugging purposes
+            logger.error("Error occurred while setting pin for email: " + email, e);
+            e.printStackTrace();
+            return "Failed to set pin. Please try again later.";
+        }
+    }
+
+    @Override
+    public String login(String email, String password) {
+        try
+        {
+            User user=userRepository.findByEmail(email);
+
+            if(user!=null)
+            {
+               if(user.getPassword().equals(password))
+               {
+                   return "user found";
+               }
+               return "invalid password";
+            }
+            else {
+                  return "user not found please check your credentials or sign up";
+            }
+        }
+        catch(Exception e)
+        {
+           e.printStackTrace();
+           return "something went wrong please try again!!";
+        }
+
     }
 
     @Override

@@ -9,6 +9,9 @@ import java.util.List;
 public interface UserService {
 
     UserDto registerUser(UserDto user) throws Exception;
+    String setPin(String email,String pin);
+
+    String login(String email,String password);
     UserDto getUserByEmail(String email);
     List<UserDto> getAllUsers();
 
