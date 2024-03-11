@@ -4,6 +4,8 @@ import com.authentication.entities.User;
 import com.authentication.payloads.UserDto;
 import com.authentication.repositories.UserRepository;
 import com.authentication.services.UserService;
+import com.authentication.util.EmailUtil;
+import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private EmailUtil emailUtil;
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Override
@@ -84,6 +89,49 @@ public class UserServiceImpl implements UserService {
            return "something went wrong please try again!!";
         }
 
+    }
+
+    @Override
+    public String forgotPassword(String email)  {
+
+        User user=userRepository.findByEmail(email);
+        if(user!=null)
+        {
+            try {
+                emailUtil.sendSetPasswordEmail(email);
+            }
+            catch(MessagingException exception)
+            {
+               throw new RuntimeException("Unable to send set password email please try again");
+            }
+        }
+        else{
+            return "user not found with this email :"+email;
+        }
+        return "please check your email to set new password to your account";
+    }
+
+    @Override
+    public String setPassword(String email, String newPassword) {
+        try {
+            User user = userRepository.findByEmail(email);
+            if (user != null) {
+                user.setPassword(newPassword);
+                userRepository.save(user);
+                return "New password set successfully login with new password";
+            }
+            else {
+                return "User not found with email: " + email;
+            }
+        }
+        catch (Exception e) {
+
+            // Log the exception for debugging purposes
+            logger.error("Error occurred while setting the new password for user : " + email, e);
+            // You may also handle specific types of exceptions separately
+            e.printStackTrace();
+            return "Failed to set new password. Please try again later.";
+        }
     }
 
     @Override
