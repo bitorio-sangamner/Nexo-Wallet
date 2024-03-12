@@ -9,7 +9,9 @@ import java.util.List;
 @Component
 public interface UserService {
 
-    UserDto registerUser(UserDto user) throws Exception;
+    String registerUser(UserDto user) throws Exception;
+    String verifyAccount(String email,String otp);
+    String regenerateOtp(String email);
     String setPin(String email,String pin);
 
     String login(String email,String password);

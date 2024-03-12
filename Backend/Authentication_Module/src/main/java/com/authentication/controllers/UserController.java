@@ -25,53 +25,83 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserDto> signUp(HttpServletResponse response, @Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> signUp(HttpServletResponse response, @Valid @RequestBody UserDto userDto) {
+        String message;
         try {
             // Register user and get user details
-            UserDto createdUserDto = userService.registerUser(userDto);
+            // UserDto createdUserDto = userService.registerUser(userDto);
+            message= userService.registerUser(userDto);
+            if (message.equals("User registration successful check your email and verify your account")) {
 
-            // Generate session identifier
-            String sessionIdentifier = userDto.getEmail(); // For simplicity, using email as session identifier
+                // Generate session identifier
+                String sessionIdentifier = userDto.getEmail(); // For simplicity, using email as session identifier
 
-            // Create a cookie with the session identifier
-            Cookie cookie = new Cookie("sessionIdentifier", sessionIdentifier);
-            cookie.setHttpOnly(true); // Ensure the cookie is only accessible via HTTP and not by JavaScript
-            cookie.setMaxAge(3600); // Cookie expires after 1 hour (adjust as needed)
-            cookie.setPath("/"); // Cookie is accessible across the entire application
+                // Create a cookie with the session identifier
+                Cookie cookie = new Cookie("sessionIdentifier", sessionIdentifier);
+                cookie.setHttpOnly(true); // Ensure the cookie is only accessible via HTTP and not by JavaScript
+                cookie.setMaxAge(3600); // Cookie expires after 1 hour (adjust as needed)
+                cookie.setPath("/"); // Cookie is accessible across the entire application
 
-            // Add the cookie to the response headers
-            response.addCookie(cookie);
-            logger.info("User signed up successfully: {}", createdUserDto.getEmail());
+                // Add the cookie to the response headers
+                response.addCookie(cookie);
+                logger.info("User signed up successfully: {}", userDto.getEmail());
 
-            return new ResponseEntity<>(createdUserDto, HttpStatus.CREATED);
-        } catch (Exception e) {
+                return new ResponseEntity<>(message, HttpStatus.CREATED);
+            }
+        }
+        catch (Exception e) {
             logger.error("Failed to sign up user", e);
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+        return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @GetMapping("/verify-account")
+    public ResponseEntity<String> verifyAccount(@RequestParam String email,@RequestParam String otp) {
+        try {
+//            String email = jsonObject.getString("email");
+//            String otp = jsonObject.getString("otp");
 
-    @PostMapping("/setPin")
-    public ResponseEntity<Object> setPin(@CookieValue(name = "sessionIdentifier", required = false) String sessionIdentifier, @RequestBody JSONObject jsonObject)
-    {
-
-        String pin = jsonObject.getString("pin");
-        if (sessionIdentifier != null) {
-            String msg=userService.setPin(sessionIdentifier,pin);
-            if(msg.equals("Pin set successfully!")) {
-                //return msg;
-
-                return new ResponseEntity<>(msg,HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>(msg,HttpStatus.OK);
-            }
+            String message = userService.verifyAccount(email, otp);
+            return ResponseEntity.ok(message);
         }
-        else {
-            return new ResponseEntity<>("something went wrong provide your email and password again",HttpStatus.INTERNAL_SERVER_ERROR);
+        catch (Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred. Please try again later.");
         }
     }
+
+//    @PutMapping("/regenerate-otp")
+//    public ResponseEntity<String> regenerateOtp(@RequestParam String email)
+//    {
+//
+//    }
+
+
+
+
+//    @PostMapping("/setPin")
+//    public ResponseEntity<Object> setPin(@CookieValue(name = "sessionIdentifier", required = false) String sessionIdentifier, @RequestBody JSONObject jsonObject)
+//    {
+//
+//        String pin = jsonObject.getString("pin");
+//        if (sessionIdentifier != null) {
+//            String msg=userService.setPin(sessionIdentifier,pin);
+//            if(msg.equals("Pin set successfully!")) {
+//                //return msg;
+//
+//                return new ResponseEntity<>(msg,HttpStatus.OK);
+//            }
+//            else {
+//                return new ResponseEntity<>(msg,HttpStatus.OK);
+//            }
+//        }
+//        else {
+//            return new ResponseEntity<>("something went wrong provide your email and password again",HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody JSONObject jsonObject) {

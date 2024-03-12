@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="users")
 @NoArgsConstructor
@@ -19,5 +21,10 @@ public class User {
     private String fullname;
     private String email;
     private String password;
-    private String pin;
+    //private String pin;
+
+    private boolean active;
+    private String otp;
+    private LocalDateTime otpGeneratedTime;
+
 }

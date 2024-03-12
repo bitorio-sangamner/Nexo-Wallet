@@ -5,6 +5,7 @@ import com.authentication.payloads.UserDto;
 import com.authentication.repositories.UserRepository;
 import com.authentication.services.UserService;
 import com.authentication.util.EmailUtil;
+import com.authentication.util.OtpUtil;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.authentication.exceptions.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -27,12 +30,28 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailUtil emailUtil;
+    @Autowired
+    private OtpUtil otpUtil;
+
+
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Override
-    public UserDto registerUser(UserDto userDto)  {
+    public String registerUser(UserDto userDto)  {
+
+
+            String otp = otpUtil.generateOtp();
+        try {
+            emailUtil.sendOtpEmail(userDto.getEmail(), otp);
+        }
+        catch(MessagingException e)
+        {
+            throw new RuntimeException("Unable to send please try again");
+        }
 
         User user=this.dtoToUser(userDto);
+        user.setOtp(otp);
+        user.setOtpGeneratedTime(LocalDateTime.now());
 
         User userResult=userRepository.findByEmail(user.getEmail());
 
@@ -42,28 +61,56 @@ public class UserServiceImpl implements UserService {
             throw new ResourceAlreadyExistsException("User with",user.getEmail(),"already exists");
         }
         User savedUser=this.userRepository.save(user);
+        this.userToDto(savedUser);
 
-        return this.userToDto(savedUser);
+        return "User registration successful check your email and verify your account";
+    }
+
+    @Override
+    public String verifyAccount(String email, String otp) {
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds() <= (1 * 60)) {
+                user.setActive(true);
+                userRepository.save(user);
+                return "Account verified. You can now login.";
+            }
+            else {
+                return "Invalid OTP or OTP expired. Please regenerate OTP and try again.";
+            }
+        } else {
+            return "User not found with email: " + email;
+        }
+    }
+
+    @Override
+    public String regenerateOtp(String email) {
+        return null;
     }
 
     @Override
     public String setPin(String email, String pin) {
-        try {
-            User user = userRepository.findByEmail(email);
-            if (user != null) {
-                user.setPin(pin);
-                userRepository.save(user);
-                return "Pin set successfully!";
-            } else {
-                return "User not found with email: " + email;
-            }
-        } catch (Exception e) {
-            // Log the exception for debugging purposes
-            logger.error("Error occurred while setting pin for email: " + email, e);
-            e.printStackTrace();
-            return "Failed to set pin. Please try again later.";
-        }
+        return null;
     }
+
+//    @Override
+//    public String setPin(String email, String pin) {
+//        try {
+//            User user = userRepository.findByEmail(email);
+//            if (user != null) {
+//                user.setPin(pin);
+//                userRepository.save(user);
+//                return "Pin set successfully!";
+//            } else {
+//                return "User not found with email: " + email;
+//            }
+//        } catch (Exception e) {
+//            // Log the exception for debugging purposes
+//            logger.error("Error occurred while setting pin for email: " + email, e);
+//            e.printStackTrace();
+//            return "Failed to set pin. Please try again later.";
+//        }
+//    }
 
     @Override
     public String login(String email, String password) {
