@@ -23,7 +23,7 @@ public class User {
     private String password;
     //private String pin;
 
-    private boolean active;
+    private boolean active=false;
     private String otp;
     private LocalDateTime otpGeneratedTime;
 

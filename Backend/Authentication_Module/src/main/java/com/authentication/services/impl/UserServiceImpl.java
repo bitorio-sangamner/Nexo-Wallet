@@ -17,6 +17,7 @@ import com.authentication.exceptions.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -70,7 +71,8 @@ public class UserServiceImpl implements UserService {
     public String verifyAccount(String email, String otp) {
         User user = userRepository.findByEmail(email);
         if (user != null) {
-            if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds() <= (1 * 60)) {
+            if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds() <= (1 * 60))
+            {
                 user.setActive(true);
                 userRepository.save(user);
                 return "Account verified. You can now login.";
@@ -93,6 +95,8 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+
+
 //    @Override
 //    public String setPin(String email, String pin) {
 //        try {
@@ -112,29 +116,46 @@ public class UserServiceImpl implements UserService {
 //        }
 //    }
 
+//    @Override
+//    public String login(String email, String password) {
+//        try {
+//            User user = userRepository.findByEmail(email);
+//
+//            if (Objects.nonNull(user))
+//            {
+//                if (user.getPassword().equals(password)) {
+//                    return "user found";
+//                }
+//                else {
+//                    return "invalid password";
+//                }
+//            }
+//            else {
+//                throw new ResourceNotFoundException("User", "email", email);
+//            }
+//        } catch (ResourceNotFoundException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            throw new RuntimeException("Something went wrong. Please try again.", e);
+//        }
+   // }
+
     @Override
     public String login(String email, String password) {
-        try
-        {
-            User user=userRepository.findByEmail(email);
 
-            if(user!=null)
+        User user = userRepository.findByEmail(email);
+        if (Objects.nonNull(user))
             {
-               if(user.getPassword().equals(password))
-               {
-                   return "user found";
-               }
-               return "invalid password";
+                if (user.getPassword().equals(password)) {
+                    return "user found";
+                }
+                else {
+                    return "invalid password";
+                }
             }
             else {
-                  return "user not found please check your credentials or sign up";
+                throw new ResourceNotFoundException("User", "email", email);
             }
-        }
-        catch(Exception e)
-        {
-           e.printStackTrace();
-           return "something went wrong please try again!!";
-        }
 
     }
 
@@ -155,7 +176,7 @@ public class UserServiceImpl implements UserService {
         else{
             return "user not found with this email :"+email;
         }
-        return "please check your email to set new password to your account";
+        return "please check your email to set a new password for your account";
     }
 
     @Override

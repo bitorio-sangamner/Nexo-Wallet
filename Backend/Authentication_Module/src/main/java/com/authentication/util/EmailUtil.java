@@ -21,7 +21,7 @@ public class EmailUtil {
         mimeMessageHelper.setSubject("Set Password");
         mimeMessageHelper.setText("""
                 <div>
-                  <a href="http://localhost:9090/set-password?email=%s" target="_blank">Click link to set password</a>
+                  <a href="http://localhost:9090/Nexousers/forgetPassword-page" target="_blank">Click link to set password</a>
                   </div> 
                 """.formatted(email),true);
 

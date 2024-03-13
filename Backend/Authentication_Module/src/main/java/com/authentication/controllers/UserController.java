@@ -1,6 +1,7 @@
 package com.authentication.controllers;
 
 import com.alibaba.fastjson.JSONObject;
+import com.authentication.exceptions.ResourceNotFoundException;
 import com.authentication.payloads.SetPasswordDto;
 import com.authentication.payloads.UserDto;
 import com.authentication.services.UserService;
@@ -24,10 +25,11 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
+
     @PostMapping("/sign-up")
-    public ResponseEntity<Object> signUp(HttpServletResponse response, @Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> signUp(HttpServletResponse response, @Valid @RequestBody UserDto userDto) throws Exception {
         String message;
-        try {
+
             // Register user and get user details
             // UserDto createdUserDto = userService.registerUser(userDto);
             message= userService.registerUser(userDto);
@@ -48,20 +50,14 @@ public class UserController {
 
                 return new ResponseEntity<>(message, HttpStatus.CREATED);
             }
-        }
-        catch (Exception e) {
-            logger.error("Failed to sign up user", e);
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
+
         return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/verify-account")
     public ResponseEntity<String> verifyAccount(@RequestParam String email,@RequestParam String otp) {
         try {
-//            String email = jsonObject.getString("email");
-//            String otp = jsonObject.getString("otp");
 
             String message = userService.verifyAccount(email, otp);
             return ResponseEntity.ok(message);
@@ -105,11 +101,12 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody JSONObject jsonObject) {
-        try {
+
             String email = jsonObject.getString("email");
             String password = jsonObject.getString("password");
 
             String message = userService.login(email, password);
+            logger.info("Message :"+message);
 
             if ("user found".equals(message)) {
                 logger.info("User logged in successfully: {}", email);
@@ -123,68 +120,7 @@ public class UserController {
                 logger.warn("User not found: {}", email);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
             }
-        } catch (Exception e) {
-
-            logger.error("An unexpected error occurred during login", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An unexpected error occurred. Please try again later.");
-        }
     }
 
-    @PutMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody JSONObject json) {
-        try {
-            String email = json.getString("email");
-            String message = userService.forgotPassword(email);
 
-            if ("please check your email to set a new password for your account".equals(message)) {
-                logger.info("Forgot password request processed successfully for email: {}", email);
-                return ResponseEntity.ok(message);
-            }
-            else {
-                logger.warn("Failed to process forgot password request for email: {}. Reason: {}", email, message);
-                return ResponseEntity.badRequest().body(message);
-            }
-        }
-        catch (MessagingException e) {
-            // Log the exception for debugging purposes
-            logger.error("Failed to send email for forgot password request", e);
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email. Please try again later.");
-        }
-        catch (Exception e) {
-            // Log the exception for debugging purposes
-            logger.error("An unexpected error occurred during forgot password request", e);
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred. Please try again later.");
-        }
-    }
-    @PutMapping("/set-password")
-    public ResponseEntity<String> setPassword(@Valid @RequestBody SetPasswordDto setPasswordDto) {
-        try {
-            String email = setPasswordDto.getEmail();
-            String newPassword = setPasswordDto.getNewPassword();
-
-            String message = userService.setPassword(email, newPassword);
-
-            HttpStatus status;
-            if (message.equals("New password set successfully login with new password")) {
-                status = HttpStatus.OK;
-            }
-            else if (message.equals("User not found with email: " + email)) {
-                status = HttpStatus.NOT_FOUND;
-            }
-            else {
-                status = HttpStatus.INTERNAL_SERVER_ERROR;
-            }
-
-            return ResponseEntity.status(status).body(message);
-        }
-        catch (Exception e) {
-
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to set new password. Please try again later.");
-        }
-    }
 }
