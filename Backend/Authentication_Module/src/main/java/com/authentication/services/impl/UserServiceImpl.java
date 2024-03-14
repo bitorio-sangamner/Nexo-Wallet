@@ -37,40 +37,39 @@ public class UserServiceImpl implements UserService {
 
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+
     @Override
-    public String registerUser(UserDto userDto)  {
+    public String registerUser(UserDto userDto) {
+        // Convert DTO to entity
+        User user = dtoToUser(userDto);
 
+        // Check if user already exists
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new ResourceAlreadyExistsException("User with email :", user.getEmail() ," already exists");
+        }
 
-            String otp = otpUtil.generateOtp();
+        // Generate OTP and send email
+        String otp = otpUtil.generateOtp();
+        logger.info("Generated OTP for {}: {}", user.getEmail(), otp);
         try {
-            emailUtil.sendOtpEmail(userDto.getEmail(), otp);
-        }
-        catch(MessagingException e)
-        {
-            throw new RuntimeException("Unable to send please try again");
+            emailUtil.sendOtpEmail(user.getEmail(), otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send verification email. Please try again later.");
         }
 
-        User user=this.dtoToUser(userDto);
+        // Set OTP and OTP generated time, then save user
         user.setOtp(otp);
         user.setOtpGeneratedTime(LocalDateTime.now());
+        User savedUser = userRepository.save(user);
 
-        User userResult=userRepository.findByEmail(user.getEmail());
-
-        if(userResult!=null)
-        {
-            //throw new Exception("User with this email already exists");
-            throw new ResourceAlreadyExistsException("User with",user.getEmail(),"already exists");
-        }
-        User savedUser=this.userRepository.save(user);
-        this.userToDto(savedUser);
-
-        return "User registration successful check your email and verify your account";
+        return "User registration successful. Check your email to verify your account.";
     }
 
     @Override
     public String verifyAccount(String email, String otp) {
         User user = userRepository.findByEmail(email);
-        if (user != null) {
+        if (Objects.nonNull(user)) {
             if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds() <= (1 * 60))
             {
                 user.setActive(true);
@@ -80,8 +79,9 @@ public class UserServiceImpl implements UserService {
             else {
                 return "Invalid OTP or OTP expired. Please regenerate OTP and try again.";
             }
-        } else {
-            return "User not found with email: " + email;
+        }
+        else {
+            throw new ResourceNotFoundException("User", "email", email);
         }
     }
 
@@ -116,29 +116,6 @@ public class UserServiceImpl implements UserService {
 //        }
 //    }
 
-//    @Override
-//    public String login(String email, String password) {
-//        try {
-//            User user = userRepository.findByEmail(email);
-//
-//            if (Objects.nonNull(user))
-//            {
-//                if (user.getPassword().equals(password)) {
-//                    return "user found";
-//                }
-//                else {
-//                    return "invalid password";
-//                }
-//            }
-//            else {
-//                throw new ResourceNotFoundException("User", "email", email);
-//            }
-//        } catch (ResourceNotFoundException e) {
-//            throw e;
-//        } catch (Exception e) {
-//            throw new RuntimeException("Something went wrong. Please try again.", e);
-//        }
-   // }
 
     @Override
     public String login(String email, String password) {
@@ -156,50 +133,46 @@ public class UserServiceImpl implements UserService {
             else {
                 throw new ResourceNotFoundException("User", "email", email);
             }
-
     }
-
     @Override
     public String forgotPassword(String email)  {
 
         User user=userRepository.findByEmail(email);
-        if(user!=null)
+        if(Objects.nonNull(user))
         {
             try {
                 emailUtil.sendSetPasswordEmail(email);
+                return "please check your email to set a new password for your account";
             }
             catch(MessagingException exception)
             {
-               throw new RuntimeException("Unable to send set password email please try again");
+               throw new RuntimeException("Failed to send set password email. Please try again later.");
             }
         }
         else{
-            return "user not found with this email :"+email;
+            throw new ResourceNotFoundException("User", "email", email);
         }
-        return "please check your email to set a new password for your account";
-    }
 
+    }
     @Override
     public String setPassword(String email, String newPassword) {
-        try {
+
             User user = userRepository.findByEmail(email);
-            if (user != null) {
-                user.setPassword(newPassword);
-                userRepository.save(user);
-                return "New password set successfully login with new password";
+            if (Objects.nonNull(user)) {
+                try {
+                    user.setPassword(newPassword);
+                    userRepository.save(user);
+                    return "New password set successfully login with new password";
+                }
+                catch(Exception e)
+                {
+                    throw new RuntimeException("Failed to set new password. Please try again later.");
+                }
             }
             else {
-                return "User not found with email: " + email;
+                throw new ResourceNotFoundException("User", "email", email);
             }
-        }
-        catch (Exception e) {
 
-            // Log the exception for debugging purposes
-            logger.error("Error occurred while setting the new password for user : " + email, e);
-            // You may also handle specific types of exceptions separately
-            e.printStackTrace();
-            return "Failed to set new password. Please try again later.";
-        }
     }
 
     @Override

@@ -22,9 +22,10 @@ public class ForgetPasswordController {
     private static final Logger logger = LoggerFactory.getLogger(ForgetPasswordController.class);
     @Autowired
     private UserService userService;
+
     @PutMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody JSONObject json) {
-        try {
+    public ResponseEntity<String> forgotPassword(@RequestBody JSONObject json) throws MessagingException, Exception {
+
             String email = json.getString("email");
             String message = userService.forgotPassword(email);
 
@@ -37,30 +38,17 @@ public class ForgetPasswordController {
                 return ResponseEntity.badRequest().body(message);
             }
         }
-        catch (MessagingException e) {
-            // Log the exception for debugging purposes
-            logger.error("Failed to send email for forgot password request", e);
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email. Please try again later.");
-        }
-        catch (Exception e) {
-            // Log the exception for debugging purposes
-            logger.error("An unexpected error occurred during forgot password request", e);
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred. Please try again later.");
-        }
-    }
 
     @GetMapping("/forgetPassword-page")
-    public String showForgetPasswordPage()
+    public String showForgetPasswordPage()throws Exception
     {
         logger.info("inside showForgetPasswordPage");
         return "forgetPassword";
     }
 
     @PutMapping("/setNew-password")
-    public ResponseEntity<String> setPassword(@Valid @RequestBody SetPasswordDto setPasswordDto) {
-        try {
+    public ResponseEntity<String> setPassword(@Valid @RequestBody SetPasswordDto setPasswordDto) throws Exception{
+
             String email = setPasswordDto.getEmail();
             String newPassword = setPasswordDto.getNewPassword();
 
@@ -70,20 +58,10 @@ public class ForgetPasswordController {
             if (message.equals("New password set successfully login with new password")) {
                 status = HttpStatus.OK;
             }
-            else if (message.equals("User not found with email: " + email)) {
-                status = HttpStatus.NOT_FOUND;
-            }
             else {
                 status = HttpStatus.INTERNAL_SERVER_ERROR;
             }
 
             return ResponseEntity.status(status).body(message);
-        }
-        catch (Exception e) {
-
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to set new password. Please try again later.");
-        }
     }
 }

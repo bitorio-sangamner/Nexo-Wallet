@@ -1,11 +1,8 @@
 package com.authentication.controllers;
 
 import com.alibaba.fastjson.JSONObject;
-import com.authentication.exceptions.ResourceNotFoundException;
-import com.authentication.payloads.SetPasswordDto;
 import com.authentication.payloads.UserDto;
 import com.authentication.services.UserService;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -56,17 +53,17 @@ public class UserController {
     }
 
     @GetMapping("/verify-account")
-    public ResponseEntity<String> verifyAccount(@RequestParam String email,@RequestParam String otp) {
-        try {
+    public ResponseEntity<Object> verifyAccount(@RequestParam String email,@RequestParam String otp) throws Exception{
+
 
             String message = userService.verifyAccount(email, otp);
-            return ResponseEntity.ok(message);
-        }
-        catch (Exception e)
-        {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An unexpected error occurred. Please try again later.");
-        }
+            if("Account verified. You can now login.".equals(message))
+            {
+                return new ResponseEntity<>(message,HttpStatus.OK);
+            }
+            else {
+                 return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
+            }
     }
 
 //    @PutMapping("/regenerate-otp")
@@ -100,7 +97,7 @@ public class UserController {
 //    }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody JSONObject jsonObject) {
+    public ResponseEntity<Object> login(@RequestBody JSONObject jsonObject) throws Exception{
 
             String email = jsonObject.getString("email");
             String password = jsonObject.getString("password");
@@ -121,6 +118,4 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
             }
     }
-
-
 }
