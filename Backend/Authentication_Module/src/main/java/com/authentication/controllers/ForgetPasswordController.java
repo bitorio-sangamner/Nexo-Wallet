@@ -1,6 +1,7 @@
 package com.authentication.controllers;
 
 import com.alibaba.fastjson.JSONObject;
+import com.authentication.payloads.ForgotPasswordRequest;
 import com.authentication.payloads.SetPasswordDto;
 import com.authentication.services.UserService;
 import jakarta.mail.MessagingException;
@@ -24,9 +25,9 @@ public class ForgetPasswordController {
     private UserService userService;
 
     @PutMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody JSONObject json) throws MessagingException, Exception {
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) throws MessagingException, Exception {
 
-            String email = json.getString("email");
+            String email = forgotPasswordRequest.getEmail();
             String message = userService.forgotPassword(email);
 
             if ("please check your email to set a new password for your account".equals(message)) {
