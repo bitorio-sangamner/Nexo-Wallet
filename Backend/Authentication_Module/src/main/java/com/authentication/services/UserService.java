@@ -1,5 +1,6 @@
 package com.authentication.services;
 
+import com.authentication.entities.UserCoinsDto;
 import com.authentication.payloads.UserDto;
 import jakarta.mail.MessagingException;
 import org.springframework.stereotype.Component;
@@ -23,4 +24,5 @@ public interface UserService {
     List<UserDto> getAllUsers();
 
     void deleteUser(String email);
+    List<UserCoinsDto> getAllCurrenciesHeldByUser(String email);
 }

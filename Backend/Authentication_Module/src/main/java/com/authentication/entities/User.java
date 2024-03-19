@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="users")
@@ -26,5 +27,7 @@ public class User {
     private boolean active=false;
     private String otp;
     private LocalDateTime otpGeneratedTime;
+
+    transient private List<UserCoinsDto> userCoinsDetails;
 
 }

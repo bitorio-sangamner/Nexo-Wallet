@@ -1,8 +1,10 @@
 package com.authentication.services.impl;
 
 import com.authentication.entities.User;
+import com.authentication.entities.UserCoinsDto;
 import com.authentication.payloads.UserDto;
 import com.authentication.repositories.UserRepository;
+import com.authentication.services.UserCoinsClient;
 import com.authentication.services.UserService;
 import com.authentication.util.EmailUtil;
 import com.authentication.util.OtpUtil;
@@ -34,6 +36,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private OtpUtil otpUtil;
 
+    @Autowired
+    private UserCoinsClient userCoinsClient;
 
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -74,6 +78,9 @@ public class UserServiceImpl implements UserService {
             {
                 user.setActive(true);
                 userRepository.save(user);
+
+                userCoinsClient.createUserCoinsDetails((long) user.getId());
+
                 return "Account verified. You can now login.";
             }
             else {
@@ -189,6 +196,15 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String email) {
 
     }
+
+    @Override
+    public List<UserCoinsDto> getAllCurrenciesHeldByUser(String email) {
+
+        User user=userRepository.findByEmail(email);
+        List<UserCoinsDto> allCurrenciesHeldByUser=userCoinsClient.getCurrencyHeldByUser((long) user.getId());
+        return allCurrenciesHeldByUser;
+    }
+
     public  User dtoToUser(UserDto userDto)
     {
         User user=this.modelMapper.map(userDto,User.class);

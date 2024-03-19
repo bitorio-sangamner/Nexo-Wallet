@@ -1,10 +1,10 @@
 package com.authentication.controllers;
 
-import com.alibaba.fastjson.JSONObject;
+
 import com.authentication.payloads.LoginRequestDto;
 import com.authentication.payloads.UserDto;
 import com.authentication.services.UserService;
-//import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -31,18 +31,19 @@ public class UserController {
             // Register user and get user details
             // UserDto createdUserDto = userService.registerUser(userDto);
             message= userService.registerUser(userDto);
-            if (message.equals("User registration successful check your email and verify your account")) {
+            if (message.equals("User registration successful. Check your email to verify your account.")) {
 
-//                // Generate session identifier
-//                String sessionIdentifier = userDto.getEmail(); // For simplicity, using email as session identifier
-//                // Create a cookie with the session identifier
-//                Cookie cookie = new Cookie("sessionIdentifier", sessionIdentifier);
-//                cookie.setHttpOnly(true); // Ensure the cookie is only accessible via HTTP and not by JavaScript
-//                cookie.setMaxAge(3600); // Cookie expires after 1 hour (adjust as needed)
-//                cookie.setPath("/"); // Cookie is accessible across the entire application
-//
-//                // Add the cookie to the response headers
-//                response.addCookie(cookie);
+                // Generate session identifier
+                String sessionIdentifier = userDto.getEmail(); // For simplicity, using email as session identifier
+
+                // Create a cookie with the session identifier
+                Cookie cookie = new Cookie("sessionIdentifier", sessionIdentifier);
+                cookie.setHttpOnly(true); // Ensure the cookie is only accessible via HTTP and not by JavaScript
+                cookie.setMaxAge(3600); // Cookie expires after 1 hour (adjust as needed)
+                cookie.setPath("/"); // Cookie is accessible across the entire application
+
+                // Add the cookie to the response headers
+                response.addCookie(cookie);
                 logger.info("User signed up successfully: {}", userDto.getEmail());
 
                 return new ResponseEntity<>(message, HttpStatus.CREATED);
