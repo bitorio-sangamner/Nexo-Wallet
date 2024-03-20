@@ -4,7 +4,7 @@ import com.authentication.entities.User;
 import com.authentication.entities.UserCoinsDto;
 import com.authentication.payloads.UserDto;
 import com.authentication.repositories.UserRepository;
-import com.authentication.services.UserCoinsClient;
+import com.authentication.services.UserWalletClient;
 import com.authentication.services.UserService;
 import com.authentication.util.EmailUtil;
 import com.authentication.util.OtpUtil;
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     private OtpUtil otpUtil;
 
     @Autowired
-    private UserCoinsClient userCoinsClient;
+    private UserWalletClient userWalletClient;
 
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
                 user.setActive(true);
                 userRepository.save(user);
 
-                userCoinsClient.createUserCoinsDetails((long) user.getId());
+                userWalletClient.createUserCoinsDetails((long) user.getId(),user.getEmail());
 
                 return "Account verified. You can now login.";
             }
@@ -201,7 +201,7 @@ public class UserServiceImpl implements UserService {
     public List<UserCoinsDto> getAllCurrenciesHeldByUser(String email) {
 
         User user=userRepository.findByEmail(email);
-        List<UserCoinsDto> allCurrenciesHeldByUser=userCoinsClient.getCurrencyHeldByUser((long) user.getId());
+        List<UserCoinsDto> allCurrenciesHeldByUser= userWalletClient.getCurrencyHeldByUser((long) user.getId());
         return allCurrenciesHeldByUser;
     }
 

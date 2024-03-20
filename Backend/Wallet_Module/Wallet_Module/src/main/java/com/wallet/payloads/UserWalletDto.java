@@ -9,10 +9,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserCoinsDto {
+public class UserWalletDto {
 
     private long userId;
-    private String name;
+    private String userName;
+    private String currencyName;
     private String symbol;
     private BigDecimal availableBalance;
     private BigDecimal lockedBalance;

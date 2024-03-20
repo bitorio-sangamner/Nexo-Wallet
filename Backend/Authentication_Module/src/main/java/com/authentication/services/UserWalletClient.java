@@ -11,11 +11,11 @@ import java.util.List;
 
 
 @FeignClient(name = "WALLET-SERVICE", url = "http://localhost:9091") // Specify the URL of the service
-public interface UserCoinsClient {
+public interface UserWalletClient {
 
-    @PostMapping("/userCoins/createUserCoinsDetails/{userId}")
-    public void createUserCoinsDetails(@PathVariable Long userId);
+    @PostMapping("/wallet/userCoins/createUserCoinsDetails/{userId}/{userName}")
+    public void createUserCoinsDetails(@PathVariable Long userId,@PathVariable String userName);
 
-    @GetMapping("/userCoins/getCurrencyHeldByUser/{userId}")
+    @GetMapping("/wallet/userCoins/getCurrencyHeldByUser/{userId}")
     public List<UserCoinsDto> getCurrencyHeldByUser(@PathVariable Long userId);
 }
