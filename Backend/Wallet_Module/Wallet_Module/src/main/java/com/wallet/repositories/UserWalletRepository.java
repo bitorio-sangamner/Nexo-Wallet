@@ -10,4 +10,6 @@ public interface UserWalletRepository extends JpaRepository<UserWallet,Integer> 
     //custom methods
     List<UserWallet> findAllByUserId(Long userId);
     UserWallet findByUserNameAndCurrencyName(String userName,String currencyName);
+
+    UserWallet findByUserIdAndCurrencyName(Long userId,String currencyName);
 }
