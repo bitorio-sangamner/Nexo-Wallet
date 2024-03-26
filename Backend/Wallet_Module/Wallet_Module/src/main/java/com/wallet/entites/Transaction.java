@@ -1,5 +1,6 @@
 package com.wallet.entites;
 
+import com.wallet.enums.TransactionStatus;
 import com.wallet.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,12 +22,13 @@ public class Transaction {
     private long userId;
     private LocalDateTime transactionDateTime;
     private String currencyName;
-    @Enumerated(EnumType.STRING)
+    @Enumerated(value = EnumType.STRING)
     private TransactionType transactionType;
     private BigDecimal amount;
     private BigDecimal fiatValue;
     private BigDecimal fees;
-    private String status;
+    @Enumerated(value = EnumType.STRING)
+    private TransactionStatus transactionStatus;
     private String counterparty;
 
     @PrePersist

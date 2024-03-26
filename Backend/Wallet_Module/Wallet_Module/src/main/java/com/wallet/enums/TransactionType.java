@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum TransactionType {
 
-    @JsonProperty("DEPOSIT")
+    @JsonProperty("deposit")
     DEPOSIT,
-    @JsonProperty("WITHDRAWAL")
+    @JsonProperty("withdrawal")
     WITHDRAWAL,
-    @JsonProperty("TRADE")
+    @JsonProperty("trade")
     TRADE,
-    @JsonProperty("STAKING")
+    @JsonProperty("staking")
     STAKING,
-    @JsonProperty("LENDING")
+    @JsonProperty("lending")
     LENDING,
 }
