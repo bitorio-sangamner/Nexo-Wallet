@@ -16,8 +16,8 @@ public class UserWalletController {
     @Autowired
     private UserWalletService userWalletService;
 
-    @PostMapping("/createUserCoinsDetails/{userId}/{userName}")
-    public void createUserCoinsDetails(@PathVariable Long userId,@PathVariable String userName)
+    @PostMapping("/createUserWallet/{userId}/{userName}")
+    public void createUserWallet(@PathVariable Long userId,@PathVariable String userName)
     {
         userWalletService.createUserCoins(userId,userName);
     }

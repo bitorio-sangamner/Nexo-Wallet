@@ -28,19 +28,6 @@ public class TransactionController {
         String message= transactionService.saveTransaction(transactionDto);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
-
-//    @GetMapping("/filterTransaction")
-//    public ResponseEntity<List<TransactionDto>> filterTransaction(@RequestParam("userId") long userId,
-//        @RequestParam("cryptocurrency") String cryptocurrency, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-//        @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
-//        @RequestParam(value = "type", required = false) String type,
-//        @RequestParam("FiatValue") BigDecimal FiatValue)
-//    {
-//        List<TransactionDto> filteredTransactionList=transactionService.filterTransactions(userId, cryptocurrency, startDate, endDate, type, FiatValue);
-//
-//        return new ResponseEntity<>(filteredTransactionList,HttpStatus.OK);
-//    }
-
     @GetMapping("/filterTransaction")
     public ResponseEntity<List<TransactionDto>> filterTransaction(@RequestBody JSONObject jsonObject)
     {
@@ -48,6 +35,7 @@ public class TransactionController {
         String cryptocurrency= jsonObject.getString("cryptocurrency");
         Date startDate=jsonObject.getDate("startDate");
         Date endDate=jsonObject.getDate("endDate");
+        Date transactionDate=jsonObject.getDate("transactionDate");
         String transactionType= jsonObject.getString("transactionType");
         BigDecimal fiatValue=jsonObject.getBigDecimal("fiatValue");
 
@@ -56,9 +44,16 @@ public class TransactionController {
         logger.info("cryptocurrency :"+cryptocurrency);
         logger.info("fiatValue :"+fiatValue);
 
-
-        List<TransactionDto> filteredTransactionList=transactionService.filterTransactions(userId, cryptocurrency, startDate, endDate, transactionType, fiatValue);
+        List<TransactionDto> filteredTransactionList=transactionService.filterTransactions(userId, cryptocurrency, startDate, endDate,transactionDate, transactionType, fiatValue);
 
         return new ResponseEntity<>(filteredTransactionList,HttpStatus.OK);
+    }
+
+    @GetMapping("/searchTransaction")
+    public ResponseEntity<Object> searchTransactionById(@RequestBody JSONObject jsonObject)
+    {
+       Long transactionId=jsonObject.getLongValue("transactionId");
+       TransactionDto transactionDto=transactionService.searchTransactionById(transactionId);
+       return new ResponseEntity<>(transactionDto,HttpStatus.FOUND);
     }
 }

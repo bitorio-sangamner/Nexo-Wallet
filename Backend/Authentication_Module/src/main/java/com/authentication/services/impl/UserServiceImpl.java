@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
                 user.setActive(true);
                 userRepository.save(user);
 
-                userWalletClient.createUserCoinsDetails((long) user.getId(),user.getEmail());
+                userWalletClient.createUserWallet((long) user.getId(),user.getEmail());
 
                 return "Account verified. You can now login.";
             }

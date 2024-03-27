@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,7 +88,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDto> filterTransactions(long userId, String cryptocurrency, Date startDate, Date endDate, String type, BigDecimal fiatValue) {
+    public List<TransactionDto> filterTransactions(long userId, String cryptocurrency, Date startDate, Date endDate, Date transactionDate,String type, BigDecimal fiatValue) {
 
         List<Transaction> filteredTransactions = new ArrayList<>();
         // Retrieve all transactions from the database
@@ -102,12 +104,35 @@ public class TransactionServiceImpl implements TransactionService {
             if (!transaction.getCurrencyName().equalsIgnoreCase(cryptocurrency)) {
                 continue; // Skip if cryptocurrency doesn't match
             }
-//            if (startDate != null && transaction.getDate().before(startDate)) {
-//                continue; // Skip if transaction date is before the start date
+
+//            if (startDate != null) {
+//                LocalDateTime startLocalDateTime = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(); // Convert Date to LocalDateTime
+//
+//                if (transaction.getTransactionDateTime().isBefore(startLocalDateTime)) {
+//                    continue; // Skip if transaction date is before the start date
+//                }
 //            }
-//            if (endDate != null && transaction.getDate().after(endDate)) {
-//                continue; // Skip if transaction date is after the end date
+//
+//            if(endDate!=null)
+//            {
+//               LocalDateTime endLocalDateTime=endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();// Convert Date to LocalDateTime
+//
+//                if(transaction.getTransactionDateTime().isAfter(endLocalDateTime));
+//                {
+//                    continue; // Skip if transaction date is after the start date
+//                }
 //            }
+
+            if(transactionDate!=null)
+            {
+                LocalDateTime transactionLocalDateTime=transactionDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();//Convert Date to LocalDateTime
+
+                if(transaction.getTransactionDateTime().isBefore(transactionLocalDateTime) && transaction.getTransactionDateTime().isAfter(transactionLocalDateTime))
+                {
+                    continue;
+                }
+            }
+
             if (!transaction.getTransactionType().toString().equalsIgnoreCase(type)) {
                 System.out.println("transaction type from database:"+transaction.getTransactionType());
                 System.out.println("transaction type from user:"+type);
@@ -125,7 +150,6 @@ public class TransactionServiceImpl implements TransactionService {
             logger.info("userId :"+transaction.getUserId());
             logger.info("currency :"+transaction.getCurrencyName());
         }
-
         // Convert filtered transactions to TransactionDto objects
         List<TransactionDto> transactionDtoList = transactionsToDtoList(filteredTransactions);
         return transactionDtoList;
@@ -133,8 +157,9 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     @Override
-    public TransactionDto searchTransactionById(String transactionId) {
-        return null;
+    public TransactionDto searchTransactionById(Long transactionId) {
+        Transaction transaction=transactionRepository.findByTransactionId(transactionId);
+        return this.transactionToDto(transaction);
     }
 
 
