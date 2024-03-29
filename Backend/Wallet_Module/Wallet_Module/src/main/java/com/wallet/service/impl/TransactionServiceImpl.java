@@ -4,6 +4,7 @@ import com.wallet.entites.Transaction;
 import com.wallet.entites.UserWallet;
 import com.wallet.enums.TransactionStatus;
 import com.wallet.enums.TransactionType;
+import com.wallet.exceptions.ResourceNotFoundException;
 import com.wallet.payloads.TransactionDto;
 import com.wallet.repositories.TransactionRepository;
 import com.wallet.repositories.UserWalletRepository;
@@ -86,81 +87,85 @@ public class TransactionServiceImpl implements TransactionService {
     public List<TransactionDto> getAllTransactions() {
         return null;
     }
-
     @Override
-    public List<TransactionDto> filterTransactions(long userId, String cryptocurrency, Date startDate, Date endDate, Date transactionDate,String type, BigDecimal fiatValue) {
-
-        List<Transaction> filteredTransactions = new ArrayList<>();
-        // Retrieve all transactions from the database
-        List<Transaction> allTransactions = transactionRepository.findByUserId(userId);
-
-
-        // Iterate through each transaction and apply filters
-        for (Transaction transaction : allTransactions) {
-            logger.info("userId :"+transaction.getUserId());
-            logger.info("currency :"+transaction.getCurrencyName());
-            logger.info("type :"+transaction.getTransactionType());
-
-            if (!transaction.getCurrencyName().equalsIgnoreCase(cryptocurrency)) {
-                continue; // Skip if cryptocurrency doesn't match
+    public List<TransactionDto> filterTransactions(Long userId, String cryptocurrency, Date startDate, Date endDate, Date transactionDate, String type, BigDecimal fiatValue) {
+        try {
+            List<Transaction> filteredTransactions = new ArrayList<>();
+            // Retrieve all transactions from the database
+            List<Transaction> allTransactions = transactionRepository.findByUserId(userId);
+            if (allTransactions.isEmpty()) {
+                throw new ResourceNotFoundException("Transaction", "user id", userId.toString());
             }
 
-//            if (startDate != null) {
-//                LocalDateTime startLocalDateTime = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(); // Convert Date to LocalDateTime
-//
-//                if (transaction.getTransactionDateTime().isBefore(startLocalDateTime)) {
-//                    continue; // Skip if transaction date is before the start date
-//                }
-//            }
-//
-//            if(endDate!=null)
-//            {
-//               LocalDateTime endLocalDateTime=endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();// Convert Date to LocalDateTime
-//
-//                if(transaction.getTransactionDateTime().isAfter(endLocalDateTime));
-//                {
-//                    continue; // Skip if transaction date is after the start date
-//                }
-//            }
+            // Iterate through each transaction and apply filters
+            for (Transaction transaction : allTransactions) {
+                try {
+                    logger.info("userId :" + transaction.getUserId());
+                    logger.info("currency :" + transaction.getCurrencyName());
+                    logger.info("type :" + transaction.getTransactionType());
 
-            if(transactionDate!=null)
-            {
-                LocalDateTime transactionLocalDateTime=transactionDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();//Convert Date to LocalDateTime
+                    if (!transaction.getCurrencyName().equalsIgnoreCase(cryptocurrency)) {
+                        logger.info("currency does not match...");
+                        continue; // Skip if cryptocurrency doesn't match
+                    }
 
-                if(transaction.getTransactionDateTime().isBefore(transactionLocalDateTime) && transaction.getTransactionDateTime().isAfter(transactionLocalDateTime))
-                {
-                    continue;
+                    if (transactionDate != null) {
+                    LocalDateTime transactionLocalDateTime = transactionDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();//Convert Date to LocalDateTime
+
+                    if (transaction.getTransactionDateTime().isBefore(transactionLocalDateTime) && transaction.getTransactionDateTime().isAfter(transactionLocalDateTime)) {
+                        logger.info("something is wrong in the transaction date");
+                        continue;
+                    }
                 }
-            }
 
-            if (!transaction.getTransactionType().toString().equalsIgnoreCase(type)) {
-                System.out.println("transaction type from database:"+transaction.getTransactionType());
-                System.out.println("transaction type from user:"+type);
-                continue; // Skip if transaction type doesn't match
-            }
-            if (fiatValue != null && transaction.getFiatValue().compareTo(fiatValue) != 0) {
-                continue; // Skip if fiat value doesn't match
-            }
-            // If transaction passes all filters, add it to the filtered list
-            filteredTransactions.add(transaction);
+                    if (!transaction.getTransactionType().toString().equalsIgnoreCase(type)) {
+                        System.out.println("transaction type from database:" + transaction.getTransactionType());
+                        System.out.println("transaction type from user:" + type);
+                        logger.info("Transaction type does not match...");
+                        continue; // Skip if transaction type doesn't match
+                    }
+
+                    if (fiatValue != null && transaction.getFiatValue().compareTo(fiatValue) != 0) {
+                        logger.info("fiatValue does not match...");
+                        continue; // Skip if fiat value doesn't match
+                    }
+
+                    // If transaction passes all filters, add it to the filtered list
+                    filteredTransactions.add(transaction);
+                } catch (Exception e) {
+                    // Log the exception or handle it appropriately
+                    logger.error("Error processing transaction", e);
+                }
+            }//for loop
+
+            // Convert filtered transactions to TransactionDto objects
+            List<TransactionDto> transactionDtoList = transactionsToDtoList(filteredTransactions);
+            return transactionDtoList;
+        } catch (Exception e) {
+            // Log the exception or handle it appropriately
+            logger.error("Error filtering transactions", e);
+            // Rethrow the exception or return an appropriate response based on your application's logic
+            throw e;
         }
-        System.out.println("*****************************************************");
-        for(Transaction transaction:filteredTransactions)
-        {
-            logger.info("userId :"+transaction.getUserId());
-            logger.info("currency :"+transaction.getCurrencyName());
-        }
-        // Convert filtered transactions to TransactionDto objects
-        List<TransactionDto> transactionDtoList = transactionsToDtoList(filteredTransactions);
-        return transactionDtoList;
     }
-
 
     @Override
     public TransactionDto searchTransactionById(Long transactionId) {
-        Transaction transaction=transactionRepository.findByTransactionId(transactionId);
-        return this.transactionToDto(transaction);
+        try {
+            Transaction transaction = transactionRepository.findByTransactionId(transactionId);
+            if (transaction != null) {
+                return this.transactionToDto(transaction);
+            } else {
+                throw new ResourceNotFoundException("Transaction", "transaction id", transactionId.toString());
+            }
+        } catch (Exception e) {
+            // Log the exception or handle it appropriately
+            logger.error("Error searching transaction by ID: " + transactionId, e);
+            // Rethrow the exception or return an appropriate response based on your application's logic
+            throw e;
+        }
     }
+
 
 
 

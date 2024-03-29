@@ -19,7 +19,7 @@ public class UserWalletController {
     @PostMapping("/createUserWallet/{userId}/{userName}")
     public void createUserWallet(@PathVariable Long userId,@PathVariable String userName)
     {
-        userWalletService.createUserCoins(userId,userName);
+        userWalletService.createUserWallet(userId,userName);
     }
 
     @GetMapping("/getCurrencyHeldByUser/{userId}")

@@ -11,7 +11,7 @@ public interface UserWalletService {
     List<UserWalletDto> getAllCoinsOfUser();
     public void updateCoinPrices();
 
-    public void createUserCoins(Long userId,String userName);
+    public void createUserWallet(Long userId, String userName);
     public List<UserWalletDto> getCurrencyHeldByUser(Long userId);
 
     public UserWalletDto searchCoin(String userName,String currency);

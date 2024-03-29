@@ -2,10 +2,13 @@ package com.wallet.service.impl;
 
 import com.wallet.entites.UserWallet;
 import com.wallet.enums.Currency;
+import com.wallet.exceptions.ResourceNotFoundException;
 import com.wallet.payloads.UserWalletDto;
 import com.wallet.repositories.UserWalletRepository;
 import com.wallet.service.UserWalletService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,8 @@ public class UserWalletServiceImpl implements UserWalletService {
 
     @Autowired
     private UserWalletRepository userWalletRepository;
+
+    private final Logger logger= LoggerFactory.getLogger(UserWalletServiceImpl.class);
 
     @Autowired
     private ModelMapper modelMapper;
@@ -45,56 +50,75 @@ public class UserWalletServiceImpl implements UserWalletService {
     }
 
     @Override
-    public void createUserCoins(Long userId,String userName) {
-
-        // Accessing enum constants using a loop
-        for (Currency currency : Currency.values()) {
-
-            System.out.println(currency.getName() + ": " + currency.getSymbol());
-            UserWallet userWallet =new UserWallet();
-            userWallet.setUserId(userId);
-            userWallet.setUserName(userName);
-            userWallet.setCurrencyName(currency.getName());
-            userWallet.setSymbol(currency.getSymbol());
-            userWallet.setAvailableBalance(BigDecimal.ZERO);
-            userWallet.setLockedBalance(BigDecimal.ZERO);
-            userWallet.setCurrentPrice(BigDecimal.ZERO);
-            userWalletRepository.save(userWallet);
-
+    public void createUserWallet(Long userId, String userName) {
+        try {
+            // Accessing enum constants using a loop
+            for (Currency currency : Currency.values()) {
+                System.out.println(currency.getName() + ": " + currency.getSymbol());
+                UserWallet userWallet = new UserWallet();
+                userWallet.setUserId(userId);
+                userWallet.setUserName(userName);
+                userWallet.setCurrencyName(currency.getName());
+                userWallet.setSymbol(currency.getSymbol());
+                userWallet.setAvailableBalance(BigDecimal.ZERO);
+                userWallet.setLockedBalance(BigDecimal.ZERO);
+                userWallet.setCurrentPrice(BigDecimal.ZERO);
+                try {
+                    userWalletRepository.save(userWallet);
+                } catch (Exception e) {
+                    // Log the exception or handle it appropriately
+                    logger.error("Error saving user wallet for currency: " + currency.getName(), e);
+                    e.printStackTrace();
+                }
+            }
         }
-
-
-//        for (Currency coin : Currency.values()) {
-//            System.out.println("Coin: " + coin);
-//
-//            UserWallet userWallet =new UserWallet();
-//            userWallet.setUserId(userId);
-//            userWallet.setUserName(userName);
-//            userWallet.setName(String.valueOf(coin));
-//            userWalletRepository.save(userWallet);
-//        }
-
+        catch (Exception e) {
+            // Log the exception or handle it appropriately
+            logger.error("Error creating user wallet", e);
+            e.printStackTrace();
+        }
     }
+
 
     @Override
     public List<UserWalletDto> getCurrencyHeldByUser(Long userId) {
-
-        List<UserWallet> allCoinsDetailsOfUser= userWalletRepository.findAllByUserId(userId);
-
-        List<UserWalletDto> allCoinsDetailsDto = new ArrayList<>();
-        for (UserWallet coin : allCoinsDetailsOfUser) {
-            allCoinsDetailsDto.add(coinsToDto(coin));
+        try {
+            List<UserWallet> allCoinsDetailsOfUser = userWalletRepository.findAllByUserId(userId);
+            if (!allCoinsDetailsOfUser.isEmpty()) {
+                List<UserWalletDto> allCoinsDetailsDto = new ArrayList<>();
+                for (UserWallet coin : allCoinsDetailsOfUser) {
+                    allCoinsDetailsDto.add(coinsToDto(coin));
+                }
+                return allCoinsDetailsDto;
+            } else {
+                throw new ResourceNotFoundException("UserWallet", "user id", userId.toString());
+            }
+        } catch (Exception e) {
+            // Log the exception or handle it appropriately
+            logger.error("Error retrieving user wallet details for user ID: " + userId, e);
+            // Rethrow the exception or return an appropriate response based on your application's logic
+            throw e;
         }
-        return allCoinsDetailsDto;
     }
+
 
     @Override
     public UserWalletDto searchCoin(String userName, String currency) {
-
-        UserWallet userWallet=userWalletRepository.findByUserNameAndCurrencyName(userName,currency);
-        UserWalletDto userWalletDto=this.coinsToDto(userWallet);
-        return userWalletDto;
+        try {
+            UserWallet userWallet = userWalletRepository.findByUserNameAndCurrencyName(userName, currency);
+            if (userWallet != null) {
+                return this.coinsToDto(userWallet);
+            } else {
+                throw new ResourceNotFoundException("UserWallet", "userName and currency", userName + "," + currency);
+            }
+        } catch (Exception e) {
+            // Log the exception or handle it appropriately
+            logger.error("Error searching user wallet for userName: " + userName + " and currency: " + currency, e);
+            // Rethrow the exception or return an appropriate response based on your application's logic
+            throw e;
+        }
     }
+
 
 
     public UserWallet dtoToCoins(UserWalletDto coinsDto)

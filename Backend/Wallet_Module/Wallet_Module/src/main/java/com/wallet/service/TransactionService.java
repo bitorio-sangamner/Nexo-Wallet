@@ -14,7 +14,7 @@ public interface TransactionService {
 
     List<TransactionDto> getAllTransactions();
 
-    List<TransactionDto> filterTransactions(long userId, String cryptocurrency, Date startDate, Date endDate, Date transactionDate,String type, BigDecimal fiatValue);
+    List<TransactionDto> filterTransactions(Long userId, String cryptocurrency, Date startDate, Date endDate, Date transactionDate,String type, BigDecimal fiatValue);
 
     TransactionDto searchTransactionById(Long transactionId);
 }
