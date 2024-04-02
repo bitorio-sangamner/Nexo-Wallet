@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,14 +54,16 @@ public class UserWalletServiceImpl implements UserWalletService {
             // Accessing enum constants using a loop
             for (Currency currency : Currency.values()) {
                 System.out.println(currency.getName() + ": " + currency.getSymbol());
-                UserWallet userWallet = new UserWallet();
-                userWallet.setUserId(userId);
-                userWallet.setUserName(userName);
-                userWallet.setCurrencyName(currency.getName());
-                userWallet.setSymbol(currency.getSymbol());
-                userWallet.setAvailableBalance(BigDecimal.ZERO);
-                userWallet.setLockedBalance(BigDecimal.ZERO);
-                userWallet.setCurrentPrice(BigDecimal.ZERO);
+//                UserWallet userWallet = new UserWallet();
+//                userWallet.setUserId(userId);
+//                userWallet.setUserName(userName);
+//                userWallet.setCurrencyName(currency.getName());
+//                userWallet.setSymbol(currency.getSymbol());
+//                userWallet.setAvailableBalance(BigDecimal.ZERO);
+//                userWallet.setLockedBalance(BigDecimal.ZERO);
+//                userWallet.setCurrentPrice(BigDecimal.ZERO);
+
+                UserWallet userWallet=new UserWallet(userId,userName, currency.getName() , currency.getSymbol() ,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO);
                 try {
                     userWalletRepository.save(userWallet);
                 } catch (Exception e) {

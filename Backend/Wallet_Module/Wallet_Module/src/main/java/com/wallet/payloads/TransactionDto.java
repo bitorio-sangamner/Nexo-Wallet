@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -18,6 +20,7 @@ public class TransactionDto {
     @Enumerated(value = EnumType.STRING)
     private TransactionType transactionType;
     private String currencyName;
+    private LocalDateTime transactionDateTime;
     private BigDecimal amount;
     private BigDecimal fiatValue;
     private BigDecimal fees;

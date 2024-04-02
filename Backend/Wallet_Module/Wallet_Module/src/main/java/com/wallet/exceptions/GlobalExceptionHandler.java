@@ -21,4 +21,12 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse=new ApiResponse(message,true);
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleGlobalException(Exception exception)
+    {
+        logger.error("GlobalException: {}", exception);
+        String message= exception.getMessage();
+        ApiResponse apiResponse=new ApiResponse(message,true);
+        return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
