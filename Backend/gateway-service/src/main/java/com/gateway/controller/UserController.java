@@ -1,4 +1,4 @@
-package dev.rsm.gatewayService.controller;
+package com.gateway.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

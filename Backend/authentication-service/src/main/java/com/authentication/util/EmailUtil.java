@@ -4,7 +4,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,7 @@ public class EmailUtil {
          }
     }
 
-    public void sendVerifyEmail(String email) {
+    public void sendVerifyEmail(String email, String token) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
@@ -47,11 +46,11 @@ public class EmailUtil {
             mimeMessageHelper.setFrom("no-reply@nexo.wallet");
             String text = """
                     <div>
-                     <a href="http://localhost:8383/verify?email=%s" target="_blank">Click here to Verify</a>
+                     <a href="http://localhost:8383/verify?email=%s&token=%s" target="_blank">Click here to Verify</a>
                     </div>
                     """;
 
-            mimeMessageHelper.setText(text.formatted(email), true);
+            mimeMessageHelper.setText(text.formatted(email, token), true);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new RuntimeException("Internal Server error");

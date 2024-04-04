@@ -4,12 +4,9 @@ import com.authentication.dto.ApiResponse;
 import com.authentication.dto.AuthRequest;
 import com.authentication.services.AuthService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @RestController
 @AllArgsConstructor
@@ -34,8 +31,8 @@ public class AuthController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<ApiResponse> verifyEmail(@RequestParam("email") String email) {
-        return authService.verifyEmail(email);
+    public ResponseEntity<ApiResponse> verifyEmail(@RequestParam("email") String email, @RequestParam("token") String token) {
+        return authService.verifyEmail(email, token);
     }
 
     @GetMapping("/forgotpassword")

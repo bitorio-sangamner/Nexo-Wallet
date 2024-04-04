@@ -59,4 +59,11 @@ public class GlobalExceptionHandler {
         var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
         return new ResponseEntity<>(response, exception.getHttpStatusCode());
     }
+
+    @ExceptionHandler(InvalidVerifyTokenException.class)
+    public ResponseEntity<ApiResponse> InvalidVerifyTokenHandler(InvalidVerifyTokenException exception) {
+        log.error(String.format("Error message: %s", exception.getMessage()));
+        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
+        return new ResponseEntity<>(response, exception.getHttpStatusCode());
+    }
 }
