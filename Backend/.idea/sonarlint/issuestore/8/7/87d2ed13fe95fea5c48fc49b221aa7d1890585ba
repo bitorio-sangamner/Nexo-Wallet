@@ -1,0 +1,24 @@
+
+t
+java:S1192J"YDefine a constant instead of duplicating this literal "Email is not registered." 4 times.(«Ïú÷ûÿÿÿÿ
+V	java:S125"<This block of commented-out lines of code should be removed.(Öê†üÿÿÿÿ
+Z
+java:S18549"?Remove this useless assignment to local variable "verifyEmail".(»¡÷¾ıÿÿÿÿ
+G
+java:S16029",Remove useless curly braces around statement(»¡÷¾ıÿÿÿÿ
+K
+java:S14819"0Remove this unused "verifyEmail" local variable.(»¡÷¾ıÿÿÿÿ
+R
+java:S1854E"<Remove this useless assignment to local variable "password".(Ş˜âş
+C
+java:S1481E"-Remove this unused "password" local variable.(Ş˜âş
+Z
+java:S1854i"?Remove this useless assignment to local variable "verifyEmail".(»¡÷¾ıÿÿÿÿ
+N
+java:S1854d"8Remove this useless assignment to local variable "user".(Å­Æ
+?
+java:S1481d")Remove this unused "user" local variable.(Å­Æ
+G
+java:S1602i",Remove useless curly braces around statement(»¡÷¾ıÿÿÿÿ
+K
+java:S1481i"0Remove this unused "verifyEmail" local variable.(»¡÷¾ıÿÿÿÿ
