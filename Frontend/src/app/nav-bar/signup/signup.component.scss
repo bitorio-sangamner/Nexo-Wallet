@@ -1,0 +1,21 @@
+.dialog {
+    min-width: 250px;
+    max-width: 500px;
+    width: 100%;
+
+    .dialog-buttons {
+        display: flex;
+        justify-content: flex-end;
+        width: auto;
+    }
+    
+    .signup-title {
+        color: #3f51b5;
+        text-align: center;
+        font-size: xx-large;
+    }
+    
+    .signup-field {
+        width: 100%;
+    }
+}

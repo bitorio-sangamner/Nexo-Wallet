@@ -1,0 +1,21 @@
+<mat-dialog-content class="dialog">
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+        <h1 class="signup-title" mat-dialog-title ali>Signup</h1>
+        <mat-form-field class="signup-field">
+            <mat-label>Email Address</mat-label>
+            <input matInput formControlName="email" required>
+        </mat-form-field>
+        <mat-form-field class="signup-field">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" required>
+        </mat-form-field>
+        <mat-form-field class="signup-field">
+            <mat-label>Pin</mat-label>
+            <input matInput type="password" formControlName="pin">
+        </mat-form-field>
+        <div class="dialog-buttons">
+            <button mat-raised-button color="primary" type="submit">Register</button>
+        </div>
+        
+    </form>
+</mat-dialog-content>

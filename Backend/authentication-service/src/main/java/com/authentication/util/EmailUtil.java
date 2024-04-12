@@ -8,13 +8,25 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class is used for sending all types of email to the provided email address
+ * @author rsmalani
+ */
 @Component
 @AllArgsConstructor
 @Slf4j
 public class EmailUtil {
 
+    /**
+     * JavaMailSender field for using jakarta mail for sending email to the user email address.
+     */
     private JavaMailSender javaMailSender;
 
+    /**
+     * This method is used for sending reset-password link to the user's provided email address for the user starting
+     * the forgot password routine.
+     * @param email user's email address
+     */
     public void sendResetPasswordEmail(String email) {
          try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -36,6 +48,12 @@ public class EmailUtil {
          }
     }
 
+    /**
+     * This method is used for sending verify-email link to the user's provided email address for the user to verify
+     * email address in the system.
+     * @param email user's email address
+     * @param token verification token
+     */
     public void sendVerifyEmail(String email, String token) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();

@@ -3,7 +3,6 @@ package com.authentication.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
 @Getter
 @Setter

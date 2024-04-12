@@ -12,7 +12,7 @@ import java.util.Collection;
 @AllArgsConstructor
 public class SecurityUser implements UserDetails {
 
-    private AuthUser authUser;
+    private final AuthUser authUser;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Arrays.stream(authUser
