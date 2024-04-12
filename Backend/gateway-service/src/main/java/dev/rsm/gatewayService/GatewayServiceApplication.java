@@ -21,6 +21,14 @@ public class GatewayServiceApplication {
 						.filters(f -> f
 								.addRequestHeader("From-Gateway", "true"))
 						.uri("lb://AUTHENTICATION-SERVICE"))
+
+				.route("wallet-route", r -> r
+						.path("/wallet/userCoins/getCurrencyHeldByUser/{userId}", "/wallet/userCoins/getCoin/{userName}/{currencyName}","/Transaction/saveTransaction","/Transaction/filterTransaction","/Transaction/searchTransaction","/Transaction/download/statement","/MarketData/getMarketData")
+						.filters(f -> f
+								.addRequestHeader("From-Gateway", "true"))
+						.uri("lb://WALLET-SERVICE"))
+				// Add more routes for other microservices as needed
 				.build();
+
 	}
 }

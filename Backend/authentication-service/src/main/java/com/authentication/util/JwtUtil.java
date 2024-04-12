@@ -41,7 +41,9 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    public String claimsExtractUsername(String token) { return extractClaim(token, Claims::getSubject); }
+    public String claimsExtractUsername(String token)
+    { return extractClaim(token, Claims::getSubject);
+    }
 
     public Date claimsExtractExpiration(String token) { return extractClaim(token, Claims::getExpiration); }
 

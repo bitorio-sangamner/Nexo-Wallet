@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "auth-cred")
+@Table(name = "auth_cred")
 public class AuthUser {
 
     @Id

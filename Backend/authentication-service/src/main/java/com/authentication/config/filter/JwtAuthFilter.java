@@ -9,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,12 +29,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private JwtUtil jwtUtil;
 
+    private static final Logger logger= LoggerFactory.getLogger(JwtAuthFilter.class);
+
     private JpaUserDetailsService userDetailsService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        logger.info("************inside doFilterInternal*************");
+
         String gatewayHeader = request.getHeader("From-Gateway");
-        System.out.println(request.getHeaderNames());
-        if (gatewayHeader == null || !(gatewayHeader.equals("true"))) {
+        String microserviceHeader=request.getHeader("From-Wallet");
+
+        //System.out.println(request.getHeaderNames());
+        logger.info("header :"+gatewayHeader);
+        logger.info("header name :"+request.getHeaderNames());
+
+        if ((gatewayHeader == null || !(gatewayHeader.equals("true"))) && (microserviceHeader==null || !(microserviceHeader.equals("true")))) {
             throw new UnAuthorizedAccessException("You are not authorized for this service", HttpStatus.UNAUTHORIZED);
         }
 
