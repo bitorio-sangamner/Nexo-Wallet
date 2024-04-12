@@ -19,11 +19,11 @@ public class UserWalletController {
     private UserWalletService userWalletService;
     private static final Logger logger= LoggerFactory.getLogger(UserWalletController.class);
 
-    @PostMapping("/createUserWallet/{userId}/{userName}")
-    public void createUserWallet(@PathVariable Long userId,@PathVariable String userName)
-    {
-        userWalletService.createUserWallet(userId,userName);
-    }
+//    @PostMapping("/createUserWallet/{userId}/{userName}")
+//    public void createUserWallet(@PathVariable Long userId,@PathVariable String userName)
+//    {
+//        userWalletService.createUserWallet(userId,userName);
+//    }
 
     @GetMapping("/getCurrencyHeldByUser/{userId}")
     public List<UserWalletDto> getCurrencyHeldByUser(@PathVariable Long userId) {

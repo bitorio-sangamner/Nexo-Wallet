@@ -17,6 +17,7 @@
       <module name="Authentication_Module" target="17" />
       <module name="config-service" target="19" />
       <module name="eureka_Server" target="19" />
+      <module name="wdzxdsf" target="19" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -28,6 +29,7 @@
       <module name="discovery-service" options="-parameters" />
       <module name="eureka_Server" options="-parameters" />
       <module name="gateway-service" options="-parameters" />
+      <module name="wdzxdsf" options="-parameters" />
     </option>
   </component>
 </project>

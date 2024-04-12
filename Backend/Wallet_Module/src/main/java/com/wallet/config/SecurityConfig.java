@@ -25,7 +25,7 @@ public class SecurityConfig {
         //
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests().
-                requestMatchers("/wallet/userCoins/**").authenticated()
+                requestMatchers("/wallet/userCoins/**").authenticated().requestMatchers("/wallet/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and().exceptionHandling(ex -> ex.authenticationEntryPoint(point))

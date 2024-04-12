@@ -3,7 +3,6 @@ package com.authentication.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
 @Getter
 @Setter
@@ -31,4 +30,20 @@ public class AuthUser {
 
     @Column(name = "is-verified")
     boolean isVerified;
+
+    @Column(name = "verify-token")
+    String verifyToken;
+
+    @Column(name = "verify-email-token-generation-time")
+    long verifyEmailTokenGenerationTime;
+
+    @Column(name = "verify-email-active")
+    boolean verifyEmailStateActive;
+
+    @Column(name = "reset-password-active")
+    boolean isResetPasswordStateActive;
+
+    @Column(name = "reset-password-link-gen-time")
+    long resetPasswordLinkGenerationTime;
+
 }

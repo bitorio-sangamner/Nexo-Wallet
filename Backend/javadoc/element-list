@@ -1,0 +1,13 @@
+com.authentication
+com.authentication.config
+com.authentication.config.filter
+com.authentication.config.jpaUserDetailsService
+com.authentication.controllers
+com.authentication.dao
+com.authentication.dto
+com.authentication.entities
+com.authentication.exceptions
+com.authentication.exceptions.handlers
+com.authentication.payloads
+com.authentication.services
+com.authentication.util

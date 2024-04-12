@@ -5,6 +5,7 @@ import com.authentication.dto.ApiResponse;
 import com.authentication.dto.AuthRequest;
 import com.authentication.services.AuthService;
 import lombok.AllArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +41,8 @@ public class AuthController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<ApiResponse> verifyEmail(@RequestParam("email") String email) {
-        return authService.verifyEmail(email);
+    public ResponseEntity<ApiResponse> verifyEmail(@RequestParam("email") String email, @RequestParam("token") String token) {
+        return authService.verifyEmail(email, token);
     }
 
     @GetMapping("/forgotpassword")
