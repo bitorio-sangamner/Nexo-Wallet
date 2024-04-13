@@ -4,8 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +22,6 @@ import java.util.function.Function;
  */
 @Service
 @Slf4j
-@Setter
-@Getter
 public class JwtUtil {
 
     /**
@@ -44,8 +40,6 @@ public class JwtUtil {
      * Secret key for JWT authentication
      */
     private SecretKey secretKey;
-
-    private Logger logger= LoggerFactory.getLogger(JwtUtil.class);
 
     /**
      * This method is used for initializing secret key with @PostConstruct annotation
@@ -82,9 +76,6 @@ public class JwtUtil {
     }
 
 
-    public String claimsExtractUsername(String token)
-    { return extractClaim(token, Claims::getSubject);
-    }
     /**
      * This method is used for extracting email from the claims extracted from the JWT.
      * @param token JWT provided for authentication.
@@ -120,8 +111,6 @@ public class JwtUtil {
      */
     public String generate(String email, String role, String tokenType) {
         Map<String, String> claims = Map.of("email", email, "role", role);
-
-        logger.info("expiration :"+this.expiration);
 
         long expirationInMilliSeconds = Long.parseLong(expiration) * 1000;
 

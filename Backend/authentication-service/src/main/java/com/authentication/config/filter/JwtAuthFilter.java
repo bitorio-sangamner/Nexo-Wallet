@@ -40,26 +40,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String gatewayHeader = request.getHeader("From-Gateway");
         String microserviceHeader=request.getHeader("From-Wallet");
 
-        //System.out.println(request.getHeaderNames());
-        logger.info("header :"+gatewayHeader);
-        logger.info("header name :"+request.getHeaderNames());
-
         if ((gatewayHeader == null || !(gatewayHeader.equals("true"))) && (microserviceHeader==null || !(microserviceHeader.equals("true")))) {
             throw new UnAuthorizedAccessException("You are not authorized for this service", HttpStatus.UNAUTHORIZED);
         }
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
-        String username = null;
+        String email = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer")) {
             token = authHeader.substring(7);
-            username = jwtUtil.claimsExtractUsername(token);
+            email = jwtUtil.claimsExtractEmail(token);
         }
 
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
             if (jwtUtil.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

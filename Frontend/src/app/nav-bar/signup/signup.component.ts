@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { AuthService } from '../../_services/auth.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'signup',
@@ -13,7 +15,8 @@ import { MatInputModule } from '@angular/material/input';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    HttpClientModule
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss'
@@ -26,12 +29,19 @@ export class SignupComponent {
     pin: new FormControl('', [Validators.minLength(6), Validators.maxLength(6)])
   });
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private authService: AuthService) {}
 
   onSubmit(): void {
     if (this.signupForm.valid) {
       // Here you can handle the login logic
       // For now, just close the dialog
+      let email = this.signupForm.value.email;
+      let password = this.signupForm.value.password;
+      let pin = this.signupForm.value.pin;
+      this.authService.register(this.signupForm.value).subscribe(result => {
+        console.log(result);
+      });
+      // console.log(this.authService.register(this.signupForm.value));
       this.dialog.closeAll(); // Close the dialog
     }
   }

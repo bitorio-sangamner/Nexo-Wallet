@@ -18,9 +18,9 @@ public class JpaUserDetailsService implements UserDetailsService {
     @Autowired
     private AuthUserRepository authUserRepository;
     @Override
-    public UserDetails loadUserByUsername(String username) {
+    public UserDetails loadUserByUsername(String email) {
         return authUserRepository
-                .findByEmail(username)
+                .findByEmail(email)
                 .map(SecurityUser::new)
                 .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.CONFLICT));
     }

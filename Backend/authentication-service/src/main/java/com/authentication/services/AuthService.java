@@ -50,6 +50,8 @@ public class AuthService {
 
     private RestTemplate restTemplate;
 
+    private final JwtUtil jwtUtil;
+
     /**
      * This method registers the user into system and starts verifying process for the user's account.
      * On any Messaging exception occurring in sending the email to user. The user's data is deleted and
@@ -135,7 +137,7 @@ public class AuthService {
 
         // var is used in place of AuthResponse
         var response = new AuthResponse(
-                new JwtUtil().generate(authRequest.email(), "User", "ACCESS")
+                jwtUtil.generate(authRequest.email(), "User", "ACCESS")
         );
 
 
@@ -263,7 +265,8 @@ public class AuthService {
         user.setVerified(true);
         AuthUser authUser=authUserRepository.save(user);
 
-        String url = "http://localhost:9091/wallet/createUserWallet/{userId}/{userName}";
+        String url = """
+                http://localhost:9091/wallet/createUserWallet/%d/%s""".formatted(1234567890, email);
         restTemplate.postForObject(url, null, Void.class, authUser.getId(), authUser.getEmail());
         return new ResponseEntity<>(new ApiResponse("Email is verified.", LocalDateTime.now(), true, null), HttpStatus.OK);
     }

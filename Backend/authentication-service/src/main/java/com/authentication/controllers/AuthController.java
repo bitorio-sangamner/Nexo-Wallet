@@ -58,7 +58,6 @@ public class AuthController {
     @GetMapping("/getUserDetails")
     public UserDetails getUserDetails(@PathVariable String userName)
     {
-        UserDetails userDetails=userDetailsService.loadUserByUsername(userName);
-        return userDetails;
+        return userDetailsService.loadUserByUsername(userName);
     }
 }
