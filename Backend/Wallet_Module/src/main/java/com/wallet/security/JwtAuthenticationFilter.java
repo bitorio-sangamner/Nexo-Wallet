@@ -36,10 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String AuthenticationMicroserviceHeader=request.getHeader("From-Authentication");
-        if (AuthenticationMicroserviceHeader!=null && AuthenticationMicroserviceHeader.equals("true")) {
-
-        }
+//        String AuthenticationMicroserviceHeader=request.getHeader("From-Authentication");
+//        if (AuthenticationMicroserviceHeader!=null && AuthenticationMicroserviceHeader.equals("true")) {
+//
+//        }
 
         String requestHeader = request.getHeader("Authorization");
         //Bearer 2352345235sdfrsfgsdfsdf

@@ -4,7 +4,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,8 @@ import java.util.function.Function;
  */
 @Service
 @Slf4j
+@Setter
+@Getter
 public class JwtUtil {
 
     /**
@@ -38,6 +44,8 @@ public class JwtUtil {
      * Secret key for JWT authentication
      */
     private SecretKey secretKey;
+
+    private Logger logger= LoggerFactory.getLogger(JwtUtil.class);
 
     /**
      * This method is used for initializing secret key with @PostConstruct annotation
@@ -82,7 +90,8 @@ public class JwtUtil {
      * @param token JWT provided for authentication.
      * @return email address extracted from the claims.
      */
-    public String claimsExtractEmail(String token) { return extractClaim(token, Claims::getSubject); }
+    public String claimsExtractEmail(String token)
+    { return extractClaim(token, Claims::getSubject); }
 
 
     /**
@@ -111,6 +120,9 @@ public class JwtUtil {
      */
     public String generate(String email, String role, String tokenType) {
         Map<String, String> claims = Map.of("email", email, "role", role);
+
+        logger.info("expiration :"+this.expiration);
+
         long expirationInMilliSeconds = Long.parseLong(expiration) * 1000;
 
         final Date NOW = new Date();

@@ -261,10 +261,10 @@ public class AuthService {
         }
 
         user.setVerified(true);
-        authUserRepository.save(user);
+        AuthUser authUser=authUserRepository.save(user);
 
         String url = "http://localhost:9091/wallet/createUserWallet/{userId}/{userName}";
-        String response = restTemplate.getForObject(url, String.class);
+        restTemplate.postForObject(url, null, Void.class, authUser.getId(), authUser.getEmail());
         return new ResponseEntity<>(new ApiResponse("Email is verified.", LocalDateTime.now(), true, null), HttpStatus.OK);
     }
 }

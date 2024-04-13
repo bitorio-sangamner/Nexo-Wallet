@@ -20,6 +20,8 @@ public class WalletController {
     @PostMapping("/createUserWallet/{userId}/{userName}")
     public void createUserWallet(@PathVariable Long userId, @PathVariable String userName)
     {
+        logger.info("************Inside createUserWallet controller*************");
+
         userWalletService.createUserWallet(userId,userName);
     }
 }

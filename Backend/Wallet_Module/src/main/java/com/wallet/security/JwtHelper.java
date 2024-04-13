@@ -18,7 +18,7 @@ public class JwtHelper {
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
     //    public static final long JWT_TOKEN_VALIDITY =  60;
-    private String secret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
+    private String secret = "e07042972c539f933588c40f3f0c5620c335c3687b6dadd6aac1f191c1b04d0a";
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -70,4 +70,10 @@ public class JwtHelper {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }
+
+
+
+
+
+
 
