@@ -10,11 +10,11 @@ import java.util.List;
 @Component
 public interface TransactionService {
 
-    String saveTransaction(TransactionDto transactionDto);
+    String saveTransaction(String username,TransactionDto transactionDto);
 
-    List<TransactionDto> getAllTransactions();
+//    List<TransactionDto> getAllTransactions();
 
-    List<TransactionDto> filterTransactions(Long userId, String cryptocurrency, Date startDate, Date endDate, Date transactionDate,String type, BigDecimal fiatValue);
+   List<TransactionDto> filterTransactions(String userName, String cryptocurrency, Date startDate, Date endDate, Date transactionDate,String type, BigDecimal fiatValue);
 
     TransactionDto searchTransactionById(Long transactionId);
 }

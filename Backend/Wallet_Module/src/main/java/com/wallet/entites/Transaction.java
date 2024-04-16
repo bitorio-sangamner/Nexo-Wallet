@@ -21,7 +21,6 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long transactionId;
-    private long userId;
     private LocalDateTime transactionDateTime;
     private String currencyName;
     @Enumerated(value = EnumType.STRING)
@@ -32,6 +31,10 @@ public class Transaction {
     @Enumerated(value = EnumType.STRING)
     private TransactionStatus transactionStatus;
     private String counterparty;
+
+    @ManyToOne
+    @JoinColumn(name = "userEmail_fk", referencedColumnName = "email")
+    private User user;
 
     @PrePersist
     //This method will be executed just before the entity is persisted.

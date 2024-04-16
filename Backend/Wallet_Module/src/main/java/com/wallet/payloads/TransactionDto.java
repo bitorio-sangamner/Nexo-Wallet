@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 public class TransactionDto {
 
-    private long userId;
+
     @Enumerated(value = EnumType.STRING)
     private TransactionType transactionType;
     private String currencyName;

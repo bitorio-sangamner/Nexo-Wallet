@@ -5,6 +5,7 @@ import com.okex.open.api.config.APIConfiguration;
 import com.okex.open.api.service.marketData.MarketDataAPIService;
 import com.okex.open.api.service.marketData.impl.MarketDataAPIServiceImpl;
 import org.modelmapper.ModelMapper;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,6 +36,10 @@ public class ConfigClass {
     @Bean
     public ModelMapper modelMapper()
     {
+        ModelMapper modelMapper = new ModelMapper();
+
+        // Configure the mapping from UserWallet to UserWalletDto
+
         return new ModelMapper();
     }
 

@@ -31,15 +31,16 @@ public class TransactionController {
     private DownloadableStatementsService downloadableStatementsService;
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
-    @PostMapping("/saveTransaction")
-    public ResponseEntity<Object> createTransaction(@RequestBody TransactionDto transactionDto) {
-        String message = transactionService.saveTransaction(transactionDto);
+    @PostMapping("/saveTransaction/{userName}")
+    public ResponseEntity<Object> createTransaction(@PathVariable String userName,@RequestBody TransactionDto transactionDto) {
+        String message = transactionService.saveTransaction(userName,transactionDto);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @GetMapping("/filterTransaction")
     public ResponseEntity<List<TransactionDto>> filterTransaction(@RequestBody JSONObject jsonObject) {
-        Long userId = jsonObject.getLongValue("userId");
+
+        String userName=jsonObject.getString("userName");
         String cryptocurrency = jsonObject.getString("cryptocurrency");
         Date startDate = jsonObject.getDate("startDate");
         Date endDate = jsonObject.getDate("endDate");
@@ -52,13 +53,13 @@ public class TransactionController {
         logger.info("cryptocurrency :" + cryptocurrency);
         logger.info("fiatValue :" + fiatValue);
 
-        List<TransactionDto> filteredTransactionList = transactionService.filterTransactions(userId, cryptocurrency, startDate, endDate, transactionDate, transactionType, fiatValue);
+        List<TransactionDto> filteredTransactionList = transactionService.filterTransactions(userName, cryptocurrency, startDate, endDate, transactionDate, transactionType, fiatValue);
 
         return new ResponseEntity<>(filteredTransactionList, HttpStatus.OK);
     }
 
     @GetMapping("/searchTransaction")
-    public ResponseEntity<Object> searchTransactionById(@RequestBody JSONObject jsonObject) {
+    public ResponseEntity<Object> searchTransactionByUserName(@RequestBody JSONObject jsonObject) {
         Long transactionId = jsonObject.getLongValue("transactionId");
         TransactionDto transactionDto = transactionService.searchTransactionById(transactionId);
         return new ResponseEntity<>(transactionDto, HttpStatus.FOUND);
@@ -66,11 +67,11 @@ public class TransactionController {
 
     @GetMapping("/download/statement")
     public ResponseEntity<String> downloadStatement(
-            @RequestParam Long userId,
+            @RequestParam String userName,
             @RequestParam String currencyName,
             @RequestParam String format) {
 
-        List<Map<String, String>> fileContent = downloadableStatementsService.generateStatement(userId, currencyName, format);
+        List<Map<String, String>> fileContent = downloadableStatementsService.generateStatement(userName, currencyName, format);
 
         StringBuilder stringBuilder = new StringBuilder();
         // Append headers

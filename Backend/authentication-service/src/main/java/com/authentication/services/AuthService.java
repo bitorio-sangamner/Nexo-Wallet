@@ -12,6 +12,7 @@ import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -265,9 +266,11 @@ public class AuthService {
         user.setVerified(true);
         AuthUser authUser=authUserRepository.save(user);
 
-        String url = """
-                http://localhost:9091/wallet/createUserWallet/%d/%s""".formatted(1234567890, email);
-        restTemplate.postForObject(url, null, Void.class, authUser.getId(), authUser.getEmail());
+//        String url = """
+//                http://localhost:9091/wallet/createUserWallet/%d/%s""".formatted(1234567890, email);
+//        restTemplate.postForObject(url, null, Void.class, authUser.getId(), authUser.getEmail());
+        String url = "http://localhost:9091/wallet/createUserWallet/{userName}";
+        restTemplate.exchange(url, HttpMethod.POST, null, Void.class,authUser.getEmail());
         return new ResponseEntity<>(new ApiResponse("Email is verified.", LocalDateTime.now(), true, null), HttpStatus.OK);
     }
 }

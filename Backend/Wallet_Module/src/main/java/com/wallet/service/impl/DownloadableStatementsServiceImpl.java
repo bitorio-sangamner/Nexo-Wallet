@@ -77,9 +77,9 @@ public class DownloadableStatementsServiceImpl implements DownloadableStatements
 //    }
 
     @Override
-    public List<Map<String, String>> generateStatement(Long userId, String currencyName, String format) {
+    public List<Map<String, String>> generateStatement(String userName, String currencyName, String format) {
         // Retrieve transaction history for the specific coin and user from the database
-        List<Transaction> transactions = transactionRepository.findByUserIdAndCurrencyName(userId, currencyName);
+        List<Transaction> transactions = transactionRepository.findByUserEmailAndCurrencyName(userName, currencyName);
 
         List<TransactionDto> transactionDtoList = transactionServiceImpl.transactionsToDtoList(transactions);
 
