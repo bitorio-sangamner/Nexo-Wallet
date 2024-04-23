@@ -4,10 +4,17 @@
         <mat-form-field class="login-field">
             <mat-label>Email Address</mat-label>
             <input matInput formControlName="email" required>
+            @if (loginForm.invalid) {
+
+            }
         </mat-form-field>
-        <mat-form-field class="login-field">
+        <mat-form-field class="login-field" hintLabel="Length shold be between - 6 and 25">
             <mat-label>Password</mat-label>
-            <input matInput type="password" formControlName="password" required>
+            <input matInput #pinput minlength="6" maxlength="25" type="password" formControlName="password" [type]="hide ? 'password' : 'text'" required>
+            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-hint align="end">{{pinput.value.length}}</mat-hint>
         </mat-form-field>
         <div class="dialog-buttons">
             <button mat-button color="accent" type="submit">Forgot Password</button>

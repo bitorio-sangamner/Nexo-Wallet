@@ -58,7 +58,6 @@ public class AuthService {
      * InternalServerException is sent to the user.
      * @param authRequest record containing email and password and pin(if provided)
      * @return ResponseEntity with ApiResponse object with String message, time the response have been sent, true for success and null for object.
-     * @throws EmailAlreadyRegisteredException for registering with email already registered in system.
      * @throws InternalServerException for verify email link email not been able to be sent to the email address.
      * @author rsmalani
      */
@@ -67,7 +66,8 @@ public class AuthService {
 
         // Check for, is the user registered
         if (authUserRepository.findByEmail(authRequest.email().toLowerCase()).isPresent()) {
-            throw new EmailAlreadyRegisteredException("Email already registered.", HttpStatus.CONFLICT);
+            var apiResponse = new ApiResponse("Email already registered.", "fail", null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
         String password = BCrypt.hashpw(authRequest.password(), BCrypt.gensalt());
@@ -80,15 +80,11 @@ public class AuthService {
                 .build();
         authUserRepository.save(user);
 
-        // Asynchronously calls the startVerifyingProcess and to throw InternalServerException on any MessagingException error occurred during.
-        CompletableFuture.runAsync(() -> startVerifyingProcess(authRequest.email())).exceptionally(ex -> {
-            if (ex instanceof MessagingException) {
-                authUserRepository.delete(user);
-            }
-            throw new InternalServerException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-
-        return new ResponseEntity<>(new ApiResponse("User Registered Successfully. Email has been sent to email address to verify Email.", LocalDateTime.now(), true, null), HttpStatus.OK);
+        var apiResponse = new ApiResponse(
+                "User Registered Successfully.",
+                "success",
+                null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     /**
@@ -97,7 +93,7 @@ public class AuthService {
      * method for sending email with verification link to the user.
      * @param email user's email address
      */
-    private void startVerifyingProcess(String email) {
+    public void startVerifyingProcess(String email) {
         String token = RandomStringUtils.randomAlphanumeric(20);
         AuthUser authUser = authUserRepository.findByEmail(email).get();
         long now = Instant.now().toEpochMilli();
@@ -116,23 +112,24 @@ public class AuthService {
      * @return ResponseEntity with ApiResponse object with String message, time the response have been sent, true for success and AuthResponse with jwt token.
      * @throws EmailNotRegisteredException for attempting to log in with email not registered in system.
      * @throws EmailNotVerifiedException for attempting to log in with email not verified by the system.
-     * @throws InvalidLoginAttemptException for attempting to log in with invalid email and password credentials.
      */
     public ResponseEntity<ApiResponse> login(AuthRequest authRequest) {
         // Check for, is the user registered
         AuthUser user = authUserRepository
                 .findByEmail(authRequest.email().toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.CONFLICT));
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
 
         // Checks for, is the user verified
         if (!user.isVerified()) {
-            throw new EmailNotVerifiedException("Email is not verified.", HttpStatus.CONFLICT);
+            throw new EmailNotVerifiedException("Email is not verified.", HttpStatus.OK);
         }
 
         // Checks for, if the credentials are not correct
         if (!passwordEncoder.matches(authRequest.password(), user.getPassword())) {
             log.error("User attempting to login with invalid password - {}", authRequest);
-            throw new InvalidLoginAttemptException("Enter correct user credentials.", HttpStatus.CONFLICT);
+
+            var apiResponse = new ApiResponse("Enter correct user credentials.", "fail", null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
         // var is used in place of AuthResponse
@@ -140,8 +137,8 @@ public class AuthService {
                 jwtUtil.generate(authRequest.email(), "User", "ACCESS")
         );
 
-
-        return new ResponseEntity<>(new ApiResponse("User logged in successfully", LocalDateTime.now(), true, response), HttpStatus.OK);
+        var apiResponse = new ApiResponse("User logged in successfully", "success", response);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     /**
@@ -152,7 +149,8 @@ public class AuthService {
      */
     public ResponseEntity<ApiResponse> getAllUsers() {
         var response = authUserRepository.findAll();
-        return new ResponseEntity<>(new ApiResponse("Here are all the Users", LocalDateTime.now(), true, response), HttpStatus.OK);
+        var apiResponse = new ApiResponse("Here are all the Users", "success", response);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     /**
@@ -167,7 +165,7 @@ public class AuthService {
         // Check for, is the user registered
         AuthUser user = authUserRepository
                 .findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.CONFLICT));
+                .orElseThrow(() -> new EmailNotRegisteredException(email + ":- Email is not registered.", HttpStatus.OK));
         user.setResetPasswordStateActive(true);
         user.setResetPasswordLinkGenerationTime(Instant.now().toEpochMilli());
 
@@ -179,7 +177,9 @@ public class AuthService {
             }
             throw new InternalServerException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         });
-        return new ResponseEntity<>(new ApiResponse("Reset password link is sent to you registered email.", LocalDateTime.now(), true, null), HttpStatus.OK);
+
+        var apiResponse = new ApiResponse("Reset password link is sent to you registered email.", "success", null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     /**
@@ -194,11 +194,11 @@ public class AuthService {
     public ResponseEntity<ApiResponse> resetPassword(AuthRequest authRequest) {
         AuthUser user = authUserRepository
                 .findByEmail(authRequest.email().toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.CONFLICT));
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
 
         // Checks if the user has started the reset password routine
         if (!user.isResetPasswordStateActive()) {
-            return new ResponseEntity<>(new ApiResponse("Unauthorized access", LocalDateTime.now(), false, null), HttpStatus.UNAUTHORIZED);
+            throw new UnAuthorizedAccessException("Unauthorized access", HttpStatus.UNAUTHORIZED);
         }
 
         long resetPasswordLinkExpirationTime = user.getResetPasswordLinkGenerationTime() + 300000;
@@ -208,12 +208,15 @@ public class AuthService {
         // Checks if the user is using the link which has been expired
         if (Instant.now().toEpochMilli() > resetPasswordLinkExpirationTime) {
             authUserRepository.save(user);
-            return new ResponseEntity<>(new ApiResponse("Your reset password link is expired.", LocalDateTime.now(), false, null), HttpStatus.OK);
+            var apiResponse = new ApiResponse("Your reset password link is expired.","fail", null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
         user.setPassword(BCrypt.hashpw(authRequest.password(), BCrypt.gensalt()));
         authUserRepository.save(user);
-        return new ResponseEntity<>(new ApiResponse("Password reset successfully.", LocalDateTime.now(), true, null), HttpStatus.OK);
+
+        var apiResponse = new ApiResponse("Password reset successfully.", "success", null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     /**
@@ -230,16 +233,17 @@ public class AuthService {
         // Check for, is the user registered
         AuthUser user = authUserRepository
                 .findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.CONFLICT));
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
 
         // Checks if the user is already verified.
         if (user.isVerified()) {
-            return new ResponseEntity<>(new ApiResponse("Email is already verified.", LocalDateTime.now(), true, null), HttpStatus.OK);
+            var apiResponse = new ApiResponse("Email is already verified.", "fail", null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
         // Checks if the user unknowingly access the link even if he has not accessed this endpoint
         if (!user.isVerifyEmailStateActive()) {
-            return new ResponseEntity<>(new ApiResponse("Unauthorized access", LocalDateTime.now(), false, null), HttpStatus.UNAUTHORIZED);
+            throw new UnAuthorizedAccessException("Unauthorized access", HttpStatus.UNAUTHORIZED);
         }
 
         long tokenExpirationTime = user.getVerifyEmailTokenGenerationTime() + 300000;
@@ -251,15 +255,23 @@ public class AuthService {
         // Checks if the verification link has expired
         if (Instant.now().getEpochSecond() > tokenExpirationTime) {
             authUserRepository.save(user);
-            startVerifyingProcess(email);
-            return new ResponseEntity<>(new ApiResponse("Email verification link is expired. A new verification link is sent to the registered email", LocalDateTime.now(), false, null), HttpStatus.BAD_REQUEST);
+
+            var apiResponse = new ApiResponse(
+                    "Email verification link is expired. Please try again",
+                    "fail",
+                    null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
         // Checks if the verification link has been tampered with.
         if (!verifyToken.equals(token)) {
             authUserRepository.save(user);
-            startVerifyingProcess(email);
-            throw new InvalidVerifyTokenException("Invalid verification attempt for account. A new verification link is sent to the registered email", HttpStatus.BAD_REQUEST);
+
+            var apiResponse = new ApiResponse(
+                    "Invalid verification link used for account. Please try again",
+                    "fail",
+                    null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
         user.setVerified(true);
@@ -268,6 +280,8 @@ public class AuthService {
         String url = """
                 http://localhost:9091/wallet/createUserWallet/%d/%s""".formatted(1234567890, email);
         restTemplate.postForObject(url, null, Void.class, authUser.getId(), authUser.getEmail());
-        return new ResponseEntity<>(new ApiResponse("Email is verified.", LocalDateTime.now(), true, null), HttpStatus.OK);
+
+        var apiResponse = new ApiResponse("Email is verified.", "success", null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }

@@ -1,14 +1,18 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { LoginComponent } from './login/login.component';
+import { SigninComponent } from './signin/signin.component';
 import { MatButtonModule } from '@angular/material/button';
 import { SignupComponent } from './signup/signup.component';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'nav-bar',
   standalone: true,
   imports: [
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule,
+    RouterModule
   ],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss'
@@ -16,13 +20,16 @@ import { SignupComponent } from './signup/signup.component';
 export class NavBarComponent {
   constructor(public dialog: MatDialog) {}
 
+  isLoggedIn: boolean = false;
+
   openLoginDialog(): void {
-    const dialogRef = this.dialog.open(LoginComponent, {
+    const dialogRef = this.dialog.open(SigninComponent, {
       width: '350px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      this.isLoggedIn = result.data.success;
+      console.log(this.isLoggedIn,);
     });
   }
 
@@ -32,6 +39,7 @@ export class NavBarComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      console.log("Hello - " + result);
       console.log('The dialog was closed');
     });
   }

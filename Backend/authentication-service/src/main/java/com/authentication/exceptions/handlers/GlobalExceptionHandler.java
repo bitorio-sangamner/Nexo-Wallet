@@ -18,52 +18,31 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(EmailAlreadyRegisteredException.class)
-    public ResponseEntity<ApiResponse> emailAlreadyRegisteredHandler(EmailAlreadyRegisteredException exception) {
-        log.error(String.format("Error message: %s", exception.getMessage()));
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
-        return new ResponseEntity<>(response, exception.getHttpStatusCode());
-    }
-
     @ExceptionHandler(EmailNotRegisteredException.class)
     public ResponseEntity<ApiResponse> emailNotRegisteredHandler(EmailNotRegisteredException exception) {
         log.error(String.format("Error message: %s", exception.getMessage()));
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
-        return new ResponseEntity<>(response, exception.getHttpStatusCode());
-    }
-
-    @ExceptionHandler(InvalidLoginAttemptException.class)
-    public ResponseEntity<ApiResponse> invalidLoginAttemptHandler(InvalidLoginAttemptException exception) {
-        log.error(String.format("Error message: %s", exception.getMessage()));
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
+        var response = new ApiResponse(exception.getMessage(), "fail", null);
         return new ResponseEntity<>(response, exception.getHttpStatusCode());
     }
 
     @ExceptionHandler(EmailNotVerifiedException.class)
     public ResponseEntity<ApiResponse> emailNotVerifedHandler(EmailNotVerifiedException exception) {
         log.error(String.format("Error message: %s", exception.getMessage()));
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
+        var response = new ApiResponse(exception.getMessage(), "fail", null);
         return new ResponseEntity<>(response, exception.getHttpStatusCode());
     }
 
     @ExceptionHandler(UnAuthorizedAccessException.class)
     public ResponseEntity<ApiResponse> unAuthorizedAccessHandler(UnAuthorizedAccessException exception) {
         log.error(String.format("Error message: %s", exception.getMessage()));
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
+        var response = new ApiResponse(exception.getMessage(), "error", null);
         return new ResponseEntity<>(response, exception.getHttpStatusCode());
     }
 
     @ExceptionHandler(InternalServerException.class)
     public ResponseEntity<ApiResponse> internalServerErrorAccessHandler(InternalServerException exception) {
         log.error(String.format("Error message: %s", exception.getMessage()));
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
-        return new ResponseEntity<>(response, exception.getHttpStatusCode());
-    }
-
-    @ExceptionHandler(InvalidVerifyTokenException.class)
-    public ResponseEntity<ApiResponse> InvalidVerifyTokenHandler(InvalidVerifyTokenException exception) {
-        log.error(String.format("Error message: %s", exception.getMessage()));
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
+        var response = new ApiResponse(exception.getMessage(), "error", null);
         return new ResponseEntity<>(response, exception.getHttpStatusCode());
     }
 }

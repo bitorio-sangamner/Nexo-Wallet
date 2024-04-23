@@ -18,7 +18,7 @@ public class RoutesConfig {
     public RouteLocator gatewayRoutes(RouteLocatorBuilder routeLocatorBuilder) {
         return routeLocatorBuilder.routes()
                 .route("auth-route", r -> r
-                        .path("/register", "/login", "/verify", "/forgotpassword", "/resetpassword")
+                        .path("/register", "/login", "/verify", "/verify-email", "/forgotpassword", "/resetpassword")
                         .filters(f -> f
                                 .addRequestHeader("From-Gateway", "true"))
                         .uri("lb://AUTHENTICATION-SERVICE"))

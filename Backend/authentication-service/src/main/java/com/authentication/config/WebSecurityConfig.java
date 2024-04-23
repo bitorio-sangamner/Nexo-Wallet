@@ -43,10 +43,9 @@ public class WebSecurityConfig {
                         .requestMatchers(antMatcher("/register")).permitAll()
                         .requestMatchers(antMatcher("/login")).permitAll()
                         .requestMatchers(antMatcher("/verify")).permitAll()
-
-                        .requestMatchers(antMatcher("/vile")).permitAll()
+                        .requestMatchers(antMatcher("/verify-email")).permitAll()
+                        .requestMatchers(antMatcher("/users")).permitAll()
                         .requestMatchers(antMatcher("/getUserDetails")).permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
