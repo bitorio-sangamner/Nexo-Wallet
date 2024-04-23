@@ -1,13 +1,15 @@
 package com.wallet.service.impl;
 
 import com.wallet.entites.Transaction;
-import com.wallet.entites.UserWallet;
+import com.wallet.entites.User;
+import com.wallet.entites.CurrencyWallet;
 import com.wallet.enums.TransactionStatus;
 import com.wallet.enums.TransactionType;
 import com.wallet.exceptions.ResourceNotFoundException;
 import com.wallet.payloads.TransactionDto;
 import com.wallet.repositories.TransactionRepository;
-import com.wallet.repositories.UserWalletRepository;
+import com.wallet.repositories.UserRepository;
+import com.wallet.repositories.CurrencyWalletRepository;
 import com.wallet.service.TransactionService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -28,7 +31,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
     @Autowired
-    private UserWalletRepository userWalletRepository;
+    private CurrencyWalletRepository currencyWalletRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -36,12 +42,9 @@ public class TransactionServiceImpl implements TransactionService {
     private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     @Override
-    public String saveTransaction(TransactionDto transactionDto) {
+    public String saveTransaction(String username, TransactionDto transactionDto) {
 
-        UserWallet userWallet=userWalletRepository.findByUserIdAndCurrencyName(transactionDto.getUserId(),transactionDto.getCurrencyName());
-        logger.info("user id :"+userWallet.getUserId());
-        logger.info("userName :"+userWallet.getUserName());
-        logger.info("currency :"+userWallet.getCurrencyName());
+        CurrencyWallet currencyWallet = currencyWalletRepository.findByUserEmailAndCurrencyName(username, transactionDto.getCurrencyName());
 
         /*
               main code to save the user transaction
@@ -72,35 +75,49 @@ public class TransactionServiceImpl implements TransactionService {
 //        }
 //        return "something went wrong";
 
+            if(currencyWallet !=null) {
+                Transaction transaction = this.dtoToTransaction(transactionDto);
+                if (this.isValidTransactionType(transaction.getTransactionType())) {
 
-        Transaction transaction = this.dtoToTransaction(transactionDto);
-         if(this.isValidTransactionType(transaction.getTransactionType())) {
-             transactionRepository.save(transaction);
-             return "transaction saved";
-         }
-         return "invalid transaction type";
-    }
+                    Optional<User> optionalUser = this.userRepository.findByEmail(username);
+                    if (optionalUser.isPresent()) {
+                        User user = optionalUser.get();
+                        transaction.setUser(user); // Set the customer for the product
+                        transactionRepository.save(transaction);
+                        return "transaction saved";
+                    }
+
+                }
+                return "invalid transaction type";
+            }
+             throw new ResourceNotFoundException("UserWallet", "userName and currency", username + "," + transactionDto.getCurrencyName());
+
+
+        }//saveTransaction
 
 
 
+
+
+
+//    @Override
+//    public List<TransactionDto> getAllTransactions() {
+//        return null;
+//    }
     @Override
-    public List<TransactionDto> getAllTransactions() {
-        return null;
-    }
-    @Override
-    public List<TransactionDto> filterTransactions(Long userId, String cryptocurrency, Date startDate, Date endDate, Date transactionDate, String type, BigDecimal fiatValue) {
+    public List<TransactionDto> filterTransactions(String userName, String cryptocurrency, Date startDate, Date endDate, Date transactionDate, String type, BigDecimal fiatValue) {
         try {
             List<Transaction> filteredTransactions = new ArrayList<>();
             // Retrieve all transactions from the database
-            List<Transaction> allTransactions = transactionRepository.findByUserId(userId);
+            List<Transaction> allTransactions = transactionRepository.findByUserEmail(userName);
             if (allTransactions.isEmpty()) {
-                throw new ResourceNotFoundException("Transaction", "user id", userId.toString());
+                throw new ResourceNotFoundException("Transaction", "username", userName);
             }
 
             // Iterate through each transaction and apply filters
             for (Transaction transaction : allTransactions) {
                 try {
-                    logger.info("userId :" + transaction.getUserId());
+                    logger.info("userId :" + transaction.getUser().getEmail());
                     logger.info("currency :" + transaction.getCurrencyName());
                     logger.info("type :" + transaction.getTransactionType());
 

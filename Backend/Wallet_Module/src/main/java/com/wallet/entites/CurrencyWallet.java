@@ -12,27 +12,28 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserWallet {
+public class CurrencyWallet {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
-    private long userId;
-    private String userName;
     private String currencyName;
     private String symbol;
     private BigDecimal availableBalance;
     private BigDecimal lockedBalance;
     private  BigDecimal currentPrice;
 
-    public UserWallet(Long userId, String userName, String currencyName, String symbol, BigDecimal availableBalance, BigDecimal lockedBalance, BigDecimal currentPrice) {
+    @ManyToOne
+    @JoinColumn(name = "userEmail_fk", referencedColumnName = "email")
+    private User user;
 
-        this.userId=userId;
-        this.userName=userName;
-        this.currencyName=currencyName;
-        this.symbol=symbol;
-        this.availableBalance=availableBalance;
-        this.lockedBalance=lockedBalance;
-        this.currentPrice=currentPrice;
+    public CurrencyWallet(String currencyName, String symbol, BigDecimal availableBalance, BigDecimal lockedBalance, BigDecimal currentPrice,User user) {
+        this.currencyName = currencyName;
+        this.symbol = symbol;
+        this.availableBalance = availableBalance;
+        this.lockedBalance = lockedBalance;
+        this.currentPrice = currentPrice;
+        this.user=user;
     }
+
 }

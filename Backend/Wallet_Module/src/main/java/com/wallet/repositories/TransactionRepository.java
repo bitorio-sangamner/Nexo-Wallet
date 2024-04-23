@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction,Long> {
 
-    List<Transaction> findByUserId(Long userId);
+//    List<Transaction> findByUserId(Long userId);
     Transaction findByTransactionId(Long transactionId);
 
-    List<Transaction> findByUserIdAndCurrencyName(Long userId,String currencyName);
+    List<Transaction> findByUserEmailAndCurrencyName(String userName,String currencyName);
+
+    List<Transaction> findByUserEmail(String email);
 }

@@ -10,5 +10,5 @@ public interface DownloadableStatementsService {
 
 //    Map<String, List<String>> generateStatement(Long userId, String currencyName, String format);
 
-    List<Map<String, String>> generateStatement(Long userId, String currencyName, String format);
+    List<Map<String, String>> generateStatement(String userName, String currencyName, String format);
 }
