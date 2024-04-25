@@ -17,6 +17,7 @@
       <module name="Authentication_Module" target="17" />
       <module name="config-service" target="19" />
       <module name="eureka_Server" target="19" />
+      <module name="Wallet_Module" target="17" />
       <module name="wdzxdsf" target="19" />
     </bytecodeTargetLevel>
   </component>

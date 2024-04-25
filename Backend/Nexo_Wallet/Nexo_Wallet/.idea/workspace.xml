@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d1de3b4a-0e84-4259-bd8b-3e5c6352dfe5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/.mvn/wrapper/maven-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/OKX/okex-java-sdk-api-1.0.0.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/WalletModuleApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/config/AppConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/config/ConfigClass.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/config/ScheduledTasks.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/controller/CurrencyWalletController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/controller/MarketDataController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/controller/TransactionController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/controller/WalletController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/entites/CurrencyWallet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/entites/Transaction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/entites/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/enums/Currency.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/enums/TransactionStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/enums/TransactionType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/exceptions/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/exceptions/ResourceNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/payloads/ApiResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/payloads/CurrencyWalletDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/payloads/TransactionDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/payloads/UserDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/repositories/CurrencyWalletRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/repositories/TransactionRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/repositories/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/security/JwtAuthenticationEntryPoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/security/JwtAuthenticationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/security/JwtHelper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/CurrencyWalletService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/DownloadableStatementsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/MarketDataService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/TransactionService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/UserService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/impl/CurrencyWalletServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/impl/DownloadableStatementsServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/impl/MarketDataServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/impl/TransactionServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/java/com/wallet/service/impl/UserServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Wallet_Module/src/test/java/com/wallet/WalletModuleApplicationTests.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Use Maven wrapper" />
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="workspaceImportEnabled" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2fGGZeHPkCiFl4ErY5layD1fdz9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/dell/OneDrive/Documents/Nexo-Wallet/Backend/Wallet_Module"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="NexoWalletApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.nexo_wallet.NexoWalletApplication" />
+      <module name="Nexo_Wallet" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.nexo_wallet.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.NexoWalletApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d1de3b4a-0e84-4259-bd8b-3e5c6352dfe5" name="Changes" comment="" />
+      <created>1713420061760</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1713420061760</updated>
+    </task>
+    <servers />
+  </component>
+</project>
