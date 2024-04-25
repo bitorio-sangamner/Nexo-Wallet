@@ -1,0 +1,7 @@
+
+r	java:S117u"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Äª«¡øÿÿÿÿ8ËÇÚ­í1
+r	java:S117v"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ñž£¢þÿÿÿÿ8ËÇÚ­í1
+I
+java:S1128"-Remove this unused import 'org.slf4j.Logger'.(íØ®68„Ê×ºí1
+Q
+java:S1128	"4Remove this unused import 'org.slf4j.LoggerFactory'.(–ÿÚÞ8„Ê×ºí1
