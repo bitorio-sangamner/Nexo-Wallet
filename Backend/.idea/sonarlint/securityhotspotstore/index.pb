@@ -47,9 +47,3 @@ P
  javadoc/index-files/index-1.html,5\4\540939a11be76a1a25686ebe284ba1850d21864f
 y
 Iauthentication-service/src/main/java/com/authentication/util/JwtUtil.java,b\1\b1a3a2bcae8843be0e7bdfe59e197de723980c37
-í
-bWallet_Module/Nexo_Wallet/src/main/java/com/nexo_wallet/controller/PlatformCurrencyController.java,3\d\3d08888a61f239e168d81b7eab852f741e480094
-ì
-cWallet_Module/Nexo_Wallet/src/main/java/com/nexo_wallet/controller/UserOwnCurrenciesController.java,6\8\68ee958868fe6a6dab52ea0434e9b1414675c148
-ç
-]Wallet_Module/Nexo_Wallet/src/main/java/com/nexo_wallet/controller/TransactionController.java,8\d\8df275c1cafee43ccae547a53e4df352bcb5c1f1
