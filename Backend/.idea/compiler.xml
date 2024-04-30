@@ -8,7 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="authentication-service" />
-        <module name="Wallet_Module" />
+        <module name="wallet" />
         <module name="discovery-service" />
         <module name="gateway-service" />
       </profile>
@@ -17,6 +17,7 @@
       <module name="Authentication_Module" target="17" />
       <module name="config-service" target="19" />
       <module name="eureka_Server" target="19" />
+      <module name="Wallet_Module" target="17" />
       <module name="wdzxdsf" target="19" />
     </bytecodeTargetLevel>
   </component>
@@ -29,6 +30,7 @@
       <module name="discovery-service" options="-parameters" />
       <module name="eureka_Server" options="-parameters" />
       <module name="gateway-service" options="-parameters" />
+      <module name="wallet" options="-parameters" />
       <module name="wdzxdsf" options="-parameters" />
     </option>
   </component>

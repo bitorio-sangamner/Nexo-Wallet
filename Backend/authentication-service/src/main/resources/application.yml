@@ -6,7 +6,7 @@ spring:
     name: authentication-service
 
   datasource:
-    url: jdbc:mysql://localhost:3306/nexo
+    url: jdbc:mysql://localhost:3306/nexo_wallet_dev
     username: root
     password: 12345
     driver-class-name: com.mysql.cj.jdbc.Driver

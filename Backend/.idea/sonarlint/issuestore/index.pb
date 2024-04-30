@@ -47,3 +47,5 @@ P
  javadoc/index-files/index-1.html,5\4\540939a11be76a1a25686ebe284ba1850d21864f
 y
 Iauthentication-service/src/main/java/com/authentication/util/JwtUtil.java,b\1\b1a3a2bcae8843be0e7bdfe59e197de723980c37
+x
+Hgateway-service/src/main/java/com/gateway/GatewayServiceApplication.java,3\2\32e250ab5938fc6014d7bca76a120a0f6b6c7aa0
