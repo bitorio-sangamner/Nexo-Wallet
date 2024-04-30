@@ -1,18 +1,11 @@
 
-T
-java:S2629*"7Use the built-in formatting to construct this argument.(¡µÙ8üÀÚ–ë1
 E
-java:S5411="(Use a primitive boolean expression here.(Šûä8ıÀÚ–ë1
+java:S5411;"(Use a primitive boolean expression here.(Šûä8Ğƒ÷‰í1
 Y
-java:S2387 "7"logger" is the name of a field in "GenericFilterBean".(ëäã½ÿÿÿÿÿ8‰ÁÚ–ë1
-^
-java:S3457*"AFormat specifiers should be used instead of string concatenation.(¡µÙ8ÁÚ–ë1
-W	java:S125)"<This block of commented-out lines of code should be removed.(¢Õ²K8ÁÚ–ë1
-c
-java:S3457+"AFormat specifiers should be used instead of string concatenation.(”‹»¼øÿÿÿÿ8ÁÚ–ë1
+java:S2387 "7"logger" is the name of a field in "GenericFilterBean".(ëäã½ÿÿÿÿÿ8æƒ÷‰í1
 \
-java:S1128"?Remove this unused import 'com.authentication.dto.ApiResponse'.(£ÂÖÜ8ÁÚ–ë1
+java:S1128"?Remove this unused import 'com.authentication.dto.ApiResponse'.(£ÂÖÜ8îƒ÷‰í1
 f
-java:S1128"DRemove this unused import 'org.springframework.http.ResponseEntity'.(¶¯ø¦úÿÿÿÿ8ÁÚ–ë1
+java:S1128"DRemove this unused import 'org.springframework.http.ResponseEntity'.(¶¯ø¦úÿÿÿÿ8îƒ÷‰í1
 V
-java:S1128"4Remove this unused import 'java.time.LocalDateTime'.(æÃ§ƒüÿÿÿÿ8ÁÚ–ë1
+java:S1128"4Remove this unused import 'java.time.LocalDateTime'.(æÃ§ƒüÿÿÿÿ8îƒ÷‰í1
