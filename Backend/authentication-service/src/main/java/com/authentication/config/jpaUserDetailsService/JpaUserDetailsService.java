@@ -17,6 +17,7 @@ public class JpaUserDetailsService implements UserDetailsService {
 
     @Autowired
     private AuthUserRepository authUserRepository;
+
     @Override
     public UserDetails loadUserByUsername(String email) {
         return authUserRepository

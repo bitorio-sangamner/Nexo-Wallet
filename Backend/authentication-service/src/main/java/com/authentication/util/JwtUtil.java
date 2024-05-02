@@ -5,8 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,7 @@ import java.util.function.Function;
 
 /**
  * This class is used for JWT generation and validation.
+ *
  * @author rsmalani
  */
 @Service
@@ -25,7 +24,7 @@ import java.util.function.Function;
 public class JwtUtil {
 
     /**
-     *  JWT private key
+     * JWT private key
      */
     @Value("${jwt.secret}")
     private String secret;
@@ -51,6 +50,7 @@ public class JwtUtil {
 
     /**
      * This method is used getting claims from a JWT.
+     *
      * @param token JWT provided for authentication.
      * @return Claims user details from the JWT token.
      */
@@ -65,10 +65,11 @@ public class JwtUtil {
     /**
      * This method is used for extracting specific data from the claims obtained form JWT. This method uses Functional
      * programming for getting the desired claim by providing the specific function.
-     * @param token JWT provided for authentication.
+     *
+     * @param token          JWT provided for authentication.
      * @param claimsResolver The function for getting the desired claim.
+     * @param <T>            it is used to return any type of value (class or primitive) based on function provided.
      * @return the desired claim based on the function provided.
-     * @param <T> it is used to return any type of value (class or primitive) based on function provided.
      */
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getClaims(token);
@@ -78,22 +79,28 @@ public class JwtUtil {
 
     /**
      * This method is used for extracting email from the claims extracted from the JWT.
+     *
      * @param token JWT provided for authentication.
      * @return email address extracted from the claims.
      */
-    public String claimsExtractEmail(String token)
-    { return extractClaim(token, Claims::getSubject); }
+    public String claimsExtractEmail(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 
 
     /**
      * This method is used for expiration time of JWT from the claims extracted from the JWT.
+     *
      * @param token JWT provided for authentication.
      * @return Date the expiration time of the provided JWT for requests.
      */
-    private Date claimsExtractExpiration(String token) { return extractClaim(token, Claims::getExpiration); }
+    private Date claimsExtractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
 
     /**
      * This method is used to check whether the token has been expired.
+     *
      * @param token JWT provided for authentication.
      * @return boolean true if token has been expired and false for not expired.
      */
@@ -104,8 +111,9 @@ public class JwtUtil {
     /**
      * This method is used to generate JWT for user with help of email, role and type of token. The token type is not
      * used but as a blueprint for future improvement for JWT generation.
-     * @param email Email address of user.
-     * @param role Role of the user.
+     *
+     * @param email     Email address of user.
+     * @param role      Role of the user.
      * @param tokenType Token type for JWT.
      * @return JWT token generated with help of email, role, tokenType, issued time, expiration time and secret key.
      */
@@ -128,7 +136,8 @@ public class JwtUtil {
 
     /**
      * This method is used for the validation of the JWT.
-     * @param token JWT
+     *
+     * @param token       JWT
      * @param userDetails user details of the user provided with JWT.
      * @return true if correct token and false for incorrect.
      */

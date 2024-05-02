@@ -35,6 +35,7 @@ public class WebSecurityConfig {
     public UserDetailsService userDetailsService() {
         return new JpaUserDetailsService();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity

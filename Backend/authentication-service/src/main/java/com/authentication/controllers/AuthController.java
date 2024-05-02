@@ -5,7 +5,6 @@ import com.authentication.dto.ApiResponse;
 import com.authentication.dto.AuthRequest;
 import com.authentication.services.AuthService;
 import lombok.AllArgsConstructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ public class AuthController {
 
     private JpaUserDetailsService userDetailsService;
 
-    private static final Logger logger= LoggerFactory.getLogger(AuthController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody AuthRequest authRequest) {
@@ -68,8 +67,7 @@ public class AuthController {
     }
 
     @GetMapping("/getUserDetails")
-    public UserDetails getUserDetails(@PathVariable String userName)
-    {
+    public UserDetails getUserDetails(@PathVariable String userName) {
         return userDetailsService.loadUserByUsername(userName);
     }
 }

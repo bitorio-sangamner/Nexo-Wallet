@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * This class is used for sending all types of email to the provided email address
+ *
  * @author rsmalani
  */
 @Component
@@ -25,10 +26,11 @@ public class EmailUtil {
     /**
      * This method is used for sending reset-password link to the user's provided email address for the user starting
      * the forgot password routine.
+     *
      * @param email user's email address
      */
     public void sendResetPasswordEmail(String email) {
-         try {
+        try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
             mimeMessageHelper.setTo(email);
@@ -43,14 +45,15 @@ public class EmailUtil {
             mimeMessageHelper.setText(text.formatted(email), true);
 
             javaMailSender.send(mimeMessage);
-         } catch (MessagingException e) {
-             throw new RuntimeException("Internal Server error");
-         }
+        } catch (MessagingException e) {
+            throw new RuntimeException("Internal Server error");
+        }
     }
 
     /**
      * This method is used for sending verify-email link to the user's provided email address for the user to verify
      * email address in the system.
+     *
      * @param email user's email address
      * @param token verification token
      */
