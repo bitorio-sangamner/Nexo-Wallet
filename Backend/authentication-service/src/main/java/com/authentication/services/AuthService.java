@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
@@ -52,6 +53,8 @@ public class AuthService {
     private final EmailUtil emailUtil;
 
     private RestTemplate restTemplate;
+
+    private RestClient restClient;
 
     private final JwtUtil jwtUtil;
 
@@ -286,16 +289,16 @@ public class AuthService {
 
         user.setVerified(true);
         AuthUser authUser = authUserRepository.save(user);
-        String url = """
-                http://localhost:9091/wallet/createUserWallet/%d/%s""".formatted(1234567890, email);
-        restTemplate.postForObject(url, null, Void.class, authUser.getId(), authUser.getEmail());
-
-
+        
         String url1 = "http://localhost:8080/api/wallet/create/{userId}/{email}";
         String url2 = "http://localhost:8080/api/walletBalance/create/{userId}/{email}";
         // Make the HTTP requests
         restTemplate.exchange(url1, HttpMethod.POST, null, Void.class, authUser.getId(), authUser.getEmail());
         restTemplate.exchange(url2, HttpMethod.POST, null, Void.class, authUser.getId(), authUser.getEmail());
+
+//        String url = "http://localhost:8080/api/wallet/create/" + authUser.getId() + "/" + authUser.getEmail();
+//        restClient.post()
+//                .uri(url);
 
         var apiResponse = new ApiResponse("Email is verified.", "success", null);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
