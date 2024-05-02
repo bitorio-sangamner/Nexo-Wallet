@@ -6,25 +6,25 @@ spring:
     name: authentication-service
 
   datasource:
-#    url: jdbc:mysql://localhost:3306/nexo_wallet_dev
-#    username: root
-#    password: 12345
-#    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/nexo_wallet_dev
+    username: root
+    password: W7301@vai
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password: password
-    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:mem:testdb
+#    username: sa
+#    password: password
+#    driver-class-name: org.h2.Driver
 
   jpa:
-    #    properties:
-    #      hibernate:
-    #        dialect: org.hibernate.dialect.MySQL8Dialect
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.MySQL8Dialect
 
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-    show-sql: true
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.H2Dialect
+#    show-sql: true
 
   hibernate:
     ddl-auto: update
