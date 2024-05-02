@@ -290,6 +290,13 @@ public class AuthService {
                 http://localhost:9091/wallet/createUserWallet/%d/%s""".formatted(1234567890, email);
         restTemplate.postForObject(url, null, Void.class, authUser.getId(), authUser.getEmail());
 
+
+        String url1 = "http://localhost:8080/api/wallet/create/{userId}/{email}";
+        String url2 = "http://localhost:8080/api/walletBalance/create/{userId}/{email}";
+        // Make the HTTP requests
+        restTemplate.exchange(url1, HttpMethod.POST, null, Void.class, authUser.getId(), authUser.getEmail());
+        restTemplate.exchange(url2, HttpMethod.POST, null, Void.class, authUser.getId(), authUser.getEmail());
+
         var apiResponse = new ApiResponse("Email is verified.", "success", null);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
