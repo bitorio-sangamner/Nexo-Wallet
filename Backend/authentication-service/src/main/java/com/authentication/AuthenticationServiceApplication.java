@@ -18,8 +18,8 @@ public class AuthenticationServiceApplication {
 
     @Bean
     CommandLineRunner commandLineRunner(AuthUserRepository user) {
-
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
         return args -> {
             boolean authUser = user.findByEmail("admin@yopmail.com").isPresent();
             if (!authUser) {
@@ -35,5 +35,4 @@ public class AuthenticationServiceApplication {
             }
         };
     }
-
 }
