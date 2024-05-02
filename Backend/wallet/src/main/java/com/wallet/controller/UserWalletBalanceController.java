@@ -19,6 +19,7 @@ public class UserWalletBalanceController {
     @PostMapping("/create/{userId}/{email}")
     public void createUserWalletBalance(@PathVariable Long userId, @PathVariable String email)
     {
+        System.out.println("inside createUserWalletBalance");
         try {
             userWalletBalanceService.createUserWalletBalance(userId, email);
         }

@@ -266,11 +266,13 @@ public class AuthService {
         user.setVerified(true);
         AuthUser authUser=authUserRepository.save(user);
 
-//        String url = """
-//                http://localhost:9091/wallet/createUserWallet/%d/%s""".formatted(1234567890, email);
-//        restTemplate.postForObject(url, null, Void.class, authUser.getId(), authUser.getEmail());
-        String url = "http://localhost:9092/api/wallet/create/{userId}/{email}";
-        restTemplate.exchange(url, HttpMethod.POST, null, Void.class,authUser.getId(),authUser.getEmail());
+
+        String url1 = "http://localhost:8080/api/wallet/create/{userId}/{email}";
+        String url2 = "http://localhost:8080/api/walletBalance/create/{userId}/{email}";
+        // Make the HTTP requests
+        restTemplate.exchange(url1, HttpMethod.POST, null, Void.class, authUser.getId(), authUser.getEmail());
+        restTemplate.exchange(url2, HttpMethod.POST, null, Void.class, authUser.getId(), authUser.getEmail());
+
         return new ResponseEntity<>(new ApiResponse("Email is verified.", LocalDateTime.now(), true, null), HttpStatus.OK);
     }
 }
