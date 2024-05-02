@@ -21,15 +21,18 @@ public class AuthenticationServiceApplication {
 
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		return args -> {
-			user.save(AuthUser
-					.builder()
-					.email("admin@yopmail.com")
-					.password(passwordEncoder.encode("password"))
-					.pin(1234567)
-					.isVerified(true)
-					.roles("ADMIN")
-					.build()
-			);
+			boolean authUser=user.findByEmail("admin@yopmail.com").isPresent();
+			if(!authUser) {
+				user.save(AuthUser
+						.builder()
+						.email("admin@yopmail.com")
+						.password(passwordEncoder.encode("password"))
+						.pin(1234567)
+						.isVerified(true)
+						.roles("ADMIN")
+						.build()
+				);
+			}
 		};
 	}
 
