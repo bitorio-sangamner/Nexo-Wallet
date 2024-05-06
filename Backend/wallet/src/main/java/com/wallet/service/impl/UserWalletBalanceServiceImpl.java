@@ -1,11 +1,15 @@
 package com.wallet.service.impl;
 
 import com.wallet.entities.Currency;
+import com.wallet.entities.UserWallet;
 import com.wallet.entities.UserWalletBalance;
+import com.wallet.payloads.UserWalletBalanceDto;
+import com.wallet.payloads.UserWalletDto;
 import com.wallet.repositories.CurrencyRepository;
 import com.wallet.repositories.UserWalletBalanceRepository;
 import com.wallet.service.UserWalletBalanceService;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,9 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
 
     @Autowired
     private UserWalletBalanceRepository userWalletBalanceRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
     @Override
     public void createUserWalletBalance(Long id, String email) {
         try {
@@ -46,5 +53,26 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
             e.printStackTrace();
             throw new RuntimeException("Failed to create user wallet balance.", e);
         }
+    }
+
+    @Override
+    public UserWalletBalanceDto getUserCurrencyByUserEmailAndCurrencyName(String email, String currencyName) {
+
+        UserWalletBalance userWalletBalance=this.userWalletBalanceRepository.findByEmailAndCurrencyName(email,currencyName);
+        return this.userWalletBalanceToDto(userWalletBalance);
+    }
+
+
+
+    public UserWalletBalanceDto userWalletBalanceToDto(UserWalletBalance walletBalance)
+    {
+        UserWalletBalanceDto walletBalanceDto=this.modelMapper.map(walletBalance, UserWalletBalanceDto.class);
+        return walletBalanceDto;
+    }
+
+    public UserWalletBalance dtoToUserWalletBalance(UserWalletBalanceDto walletBalanceDtoDto)
+    {
+        UserWalletBalance walletBalance=this.modelMapper.map(walletBalanceDtoDto, UserWalletBalance.class);
+        return walletBalance;
     }
 }

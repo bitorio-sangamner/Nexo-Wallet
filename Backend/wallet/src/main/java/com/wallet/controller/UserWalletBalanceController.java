@@ -1,12 +1,11 @@
 package com.wallet.controller;
 
+import com.wallet.payloads.UserWalletBalanceDto;
 import com.wallet.service.UserWalletBalanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/walletBalance")
@@ -16,19 +15,15 @@ public class UserWalletBalanceController {
     @Autowired
     private UserWalletBalanceService userWalletBalanceService;
 
-    @PostMapping("/create/{userId}/{email}")
-    public void createUserWalletBalance(@PathVariable Long userId, @PathVariable String email)
-    {
-        System.out.println("inside createUserWalletBalance");
-        try {
-            userWalletBalanceService.createUserWalletBalance(userId, email);
-        }
-
-        catch(Exception e)
-        {
-            // Log the exception
-            log.error(String.valueOf(e));
-            e.printStackTrace();
+    @GetMapping("/getUserCurrency")
+    public ResponseEntity<UserWalletBalanceDto> getUserCurrencyByUserEmailAndCurrencyName(
+            @RequestParam("userEmail") String userEmail,
+            @RequestParam("currencyName") String currencyName) {
+        UserWalletBalanceDto userCurrency = userWalletBalanceService.getUserCurrencyByUserEmailAndCurrencyName(userEmail, currencyName);
+        if (userCurrency != null) {
+            return ResponseEntity.ok(userCurrency);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 

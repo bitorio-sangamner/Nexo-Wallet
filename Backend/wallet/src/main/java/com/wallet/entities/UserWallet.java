@@ -11,17 +11,32 @@ import lombok.*;
 @Builder
 public class UserWallet {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String walletAddress;
-   private String currencyName;
-    private String currencyAbbr;
+
+    @Column(name = "blockchain_network")
     private String blockchainNetwork;
-    private Long userId;
+
+    @Column(name = "currency_abbr")
+    private String currencyAbbr;
+
+    @Column(name = "currency_name")
+    private String currencyName;
+
+    @Column(name = "user_email")
     private String userEmail;
 
-    @OneToOne
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name = "wallet_address")
+    private String walletAddress;
+
+    @ManyToOne
     @JoinColumn(name = "currency_id")
     private Currency currency;
+//    @OneToOne
+//    @JoinColumn(name = "currency_id", nullable = false)
+//    private Currency currency;
 
 }

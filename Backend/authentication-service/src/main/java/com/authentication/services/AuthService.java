@@ -15,7 +15,6 @@ import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -23,6 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
+
+
+
 
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
@@ -291,17 +293,20 @@ public class AuthService {
         user.setVerified(true);
         AuthUser authUser = authUserRepository.save(user);
         
-        String url1 = "http://localhost:8080/api/wallet/create/{userId}/{email}";
-        String url2 = "http://localhost:8080/api/walletBalance/create/{userId}/{email}";
-        // Make the HTTP requests
-        restTemplate.exchange(url1, HttpMethod.POST, null, Void.class, authUser.getId(), authUser.getEmail());
-        restTemplate.exchange(url2, HttpMethod.POST, null, Void.class, authUser.getId(), authUser.getEmail());
+//        String url1 = "http://localhost:8080/api/wallet/create/{userId}/{email}";
+//       String msg= String.valueOf(restTemplate.exchange(url1, HttpMethod.POST, null, String.class, authUser.getId(), authUser.getEmail()));
 
-//        String url = "http://localhost:8080/api/wallet/create/" + authUser.getId() + "/" + authUser.getEmail();
-//        restClient.post()
-//                .uri(url);
+        String result = restClient.post()
+                .uri("http://localhost:8080/api/wallet/create/{userId}/{email}", authUser.getId(), authUser.getEmail())
+                .retrieve()
+                .body(String.class);
 
-        var apiResponse = new ApiResponse("Email is verified.", "success", null);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        System.out.println(result);
+
+
+            var apiResponse = new ApiResponse("Email is verified.", "success", null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+
     }
 }
