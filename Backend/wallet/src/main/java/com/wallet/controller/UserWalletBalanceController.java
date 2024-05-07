@@ -1,5 +1,6 @@
 package com.wallet.controller;
 
+
 import com.wallet.payloads.UserWalletBalanceDto;
 import com.wallet.service.UserWalletBalanceService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,9 @@ public class UserWalletBalanceController {
     public ResponseEntity<UserWalletBalanceDto> getUserCurrencyByUserEmailAndCurrencyName(
             @RequestParam("userEmail") String userEmail,
             @RequestParam("currencyName") String currencyName) {
-        UserWalletBalanceDto userCurrency = userWalletBalanceService.getUserCurrencyByUserEmailAndCurrencyName(userEmail, currencyName);
-        if (userCurrency != null) {
+            UserWalletBalanceDto userCurrency = userWalletBalanceService.getUserCurrencyByUserEmailAndCurrencyName(userEmail, currencyName);
             return ResponseEntity.ok(userCurrency);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+
     }
 
 }

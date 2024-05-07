@@ -31,7 +31,7 @@ public class UserWalletController {
             log.info("inside createUserWallet...");
             userWalletService.createWallet(userId, email);
             userWalletBalanceService.createUserWalletBalance(userId, email);
-            return "wallet created";
+            return "Wallet created successfully";
         }
         catch(Exception e)
         {
@@ -49,10 +49,6 @@ public class UserWalletController {
         try {
               List<UserWalletDto> userWalletDtoList=this.userWalletService.getWallet(userName);
             return ResponseEntity.ok(userWalletDtoList);
-        }
-        catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse(ex.getMessage(), false));
         }
         catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

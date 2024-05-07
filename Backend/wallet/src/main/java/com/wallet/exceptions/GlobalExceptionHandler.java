@@ -30,4 +30,13 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse=new ApiResponse(message,false);
         return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(CurrencySaveException.class)
+    public ResponseEntity<ApiResponse> handleCurrencySaveException(CurrencySaveException exception)
+    {
+        logger.error("GlobalException: {}", exception);
+        String message=exception.getMessage();
+        ApiResponse apiResponse=new ApiResponse(message,false);
+        return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

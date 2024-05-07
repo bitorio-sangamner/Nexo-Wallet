@@ -2,6 +2,7 @@ package com.wallet.service.impl;
 
 import com.wallet.entities.Currency;
 import com.wallet.entities.UserWallet;
+import com.wallet.exceptions.ResourceNotFoundException;
 import com.wallet.payloads.UserWalletDto;
 import com.wallet.repositories.CurrencyRepository;
 import com.wallet.repositories.UserWalletRepository;
@@ -9,6 +10,7 @@ import com.wallet.service.UserWalletService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +32,9 @@ public class UserWalletServiceImpl implements UserWalletService {
     public void createWallet(Long userId, String email) {
         try {
             List<Currency> currencies = currencyRepository.findAll();
+            if (currencies.isEmpty()) {
+                throw new ResourceNotFoundException("Currencies not found");
+            }
             currencies.forEach(currency -> {
                 log.info("Currency Name: {}", currency.getCurrencyName());
                 log.info("Currency Abbreviation: {}", currency.getCurrencyAbb());
@@ -46,34 +51,24 @@ public class UserWalletServiceImpl implements UserWalletService {
 
                 userWalletRepository.save(userWallet);
             });
-        }
-        catch (Exception e) {
-            // Log the exception
-            log.error(String.valueOf(e));
-            e.printStackTrace();
-            throw new RuntimeException("Failed to create user wallet.", e);
+        } catch (DataAccessException e) {
+            log.error("DataAccessException: {}", e.getMessage());
+            throw new RuntimeException("Failed to create user wallet", e);
         }
     }
 
     @Override
     public List<UserWalletDto> getWallet(String userName) {
-
-        List<UserWallet> userWalletList=this.userWalletRepository.findByUserEmail(userName);
+        List<UserWallet> userWalletList = this.userWalletRepository.findByUserEmail(userName);
         if (!userWalletList.isEmpty()) {
-            System.out.println("userWalletList is not empty...");
-            for (UserWallet userWallet : userWalletList) {
-                System.out.println("currency :" + userWallet.getCurrencyName());
-                System.out.println("currency Abb:" + userWallet.getCurrencyAbbr());
-                System.out.println("currency blockchain:" + userWallet.getBlockchainNetwork());
-
-            }
-            List<UserWalletDto> userWalletToDtoList=this.userWalletToDtoList(userWalletList);
+            log.info("User wallet list is not empty for user: {}", userName);
+            List<UserWalletDto> userWalletToDtoList = this.userWalletToDtoList(userWalletList);
             return userWalletToDtoList;
+        } else {
+            log.info("User wallet list is empty for user: {}", userName);
+            throw new ResourceNotFoundException("User wallet not found for user: " + userName);
         }
-        System.out.println("userWalletList is empty...");
-        return null;
     }
-
     public UserWalletDto walletToDto(UserWallet wallet)
     {
         UserWalletDto walletDto=this.modelMapper.map(wallet, UserWalletDto.class);

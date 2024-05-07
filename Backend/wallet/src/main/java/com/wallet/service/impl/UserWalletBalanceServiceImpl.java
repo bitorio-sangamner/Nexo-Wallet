@@ -3,6 +3,7 @@ package com.wallet.service.impl;
 import com.wallet.entities.Currency;
 import com.wallet.entities.UserWallet;
 import com.wallet.entities.UserWalletBalance;
+import com.wallet.exceptions.ResourceNotFoundException;
 import com.wallet.payloads.UserWalletBalanceDto;
 import com.wallet.payloads.UserWalletDto;
 import com.wallet.repositories.CurrencyRepository;
@@ -57,11 +58,14 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
 
     @Override
     public UserWalletBalanceDto getUserCurrencyByUserEmailAndCurrencyName(String email, String currencyName) {
-
-        UserWalletBalance userWalletBalance=this.userWalletBalanceRepository.findByEmailAndCurrencyName(email,currencyName);
-        return this.userWalletBalanceToDto(userWalletBalance);
+        UserWalletBalance userWalletBalance = this.userWalletBalanceRepository.findByEmailAndCurrencyName(email, currencyName);
+        log.info("inside getUserCurrencyByUserEmailAndCurrencyName");
+        if (userWalletBalance != null) {
+            return this.userWalletBalanceToDto(userWalletBalance);
+        } else {
+            throw new ResourceNotFoundException("User wallet balance not found for email: " + email + " and currency: " + currencyName);
+        }
     }
-
 
 
     public UserWalletBalanceDto userWalletBalanceToDto(UserWalletBalance walletBalance)
