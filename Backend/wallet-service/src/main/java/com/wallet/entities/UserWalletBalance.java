@@ -19,10 +19,10 @@ public class UserWalletBalance {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     private Long userId;
-   private String email;
+    private String email;
     private BigDecimal fundingWallet;
-   private BigDecimal tradingWallet;
-   private String currencyName;
-   private String currencyAbb;
+    private BigDecimal tradingWallet;
+    private String currencyName;
+    private String currencyAbb;
 
 }

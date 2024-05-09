@@ -68,14 +68,12 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
     }
 
 
-    public UserWalletBalanceDto userWalletBalanceToDto(UserWalletBalance walletBalance)
-    {
+    public UserWalletBalanceDto userWalletBalanceToDto(UserWalletBalance walletBalance) {
         UserWalletBalanceDto walletBalanceDto=this.modelMapper.map(walletBalance, UserWalletBalanceDto.class);
         return walletBalanceDto;
     }
 
-    public UserWalletBalance dtoToUserWalletBalance(UserWalletBalanceDto walletBalanceDtoDto)
-    {
+    public UserWalletBalance dtoToUserWalletBalance(UserWalletBalanceDto walletBalanceDtoDto) {
         UserWalletBalance walletBalance=this.modelMapper.map(walletBalanceDtoDto, UserWalletBalance.class);
         return walletBalance;
     }

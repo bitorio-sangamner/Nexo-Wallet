@@ -69,14 +69,12 @@ public class UserWalletServiceImpl implements UserWalletService {
             throw new ResourceNotFoundException("User wallet not found for user: " + userName);
         }
     }
-    public UserWalletDto walletToDto(UserWallet wallet)
-    {
+    public UserWalletDto walletToDto(UserWallet wallet) {
         UserWalletDto walletDto=this.modelMapper.map(wallet, UserWalletDto.class);
         return walletDto;
     }
 
-    public UserWallet dtoToWallet(UserWalletDto walletDto)
-    {
+    public UserWallet dtoToWallet(UserWalletDto walletDto) {
         UserWallet wallet=this.modelMapper.map(walletDto, UserWallet.class);
         return wallet;
     }

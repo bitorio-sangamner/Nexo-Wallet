@@ -19,8 +19,6 @@ public class AuthController {
 
     private AuthService authService;
 
-    private JpaUserDetailsService userDetailsService;
-
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("/register")
@@ -64,10 +62,5 @@ public class AuthController {
     @GetMapping("/resetpassword")
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody AuthRequest authRequest) {
         return authService.resetPassword(authRequest);
-    }
-
-    @GetMapping("/getUserDetails")
-    public UserDetails getUserDetails(@PathVariable String userName) {
-        return userDetailsService.loadUserByUsername(userName);
     }
 }
