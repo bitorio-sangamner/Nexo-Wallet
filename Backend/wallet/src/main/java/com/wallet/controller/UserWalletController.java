@@ -1,6 +1,6 @@
 package com.wallet.controller;
 
-import com.wallet.exceptions.ResourceNotFoundException;
+
 import com.wallet.payloads.ApiResponse;
 import com.wallet.payloads.UserWalletDto;
 import com.wallet.service.UserWalletBalanceService;
