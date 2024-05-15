@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 
-import { AuthService } from '../../shared/model/services/auth.service';
+import { AuthService } from '../../shared/services/auth.service';
 import { APIResponse } from '../../shared/model/apiResponse';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

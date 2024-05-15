@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { AuthService } from '../../shared/model/services/auth.service';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-verification',

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SignUpCredentials } from '../../../nav-bar/signup/signupcredentials';
+import { SignUpCredentials } from '../../nav-bar/signup/signupcredentials';
 
 const AUTH_API = 'http://localhost:8383';
 const httpOptions = {
