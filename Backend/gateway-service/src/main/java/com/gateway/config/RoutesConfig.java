@@ -23,7 +23,7 @@ public class RoutesConfig {
                                 .addRequestHeader("From-Gateway", "true"))
                         .uri("lb://AUTHENTICATION-SERVICE"))
                 .route( "admin-auth-route", r -> r
-                        .path("/users")
+                        .path("/users", "/logoff")
                         .filters(f -> f
 								.filter(authenticationFilter.apply(new AuthenticationFilter.Config()))
                                 .addRequestHeader("From-Gateway", "true"))

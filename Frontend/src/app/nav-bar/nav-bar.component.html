@@ -13,6 +13,8 @@
         @if (!isLoggedIn) {
             <button mat-stroked-button color="primary" (click)="openLoginDialog()">Login</button>
             <button mat-raised-button color="primary" (click)="openSignupDialog()">Register</button>
+        } @else {
+            <button mat-raised-button color="primary" (click)="logout()">Logout</button>
         }
     </div>
 </nav>

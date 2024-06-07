@@ -13,8 +13,7 @@ public class RouteValidator {
             "/login",
             "/verify",
             "/forgotpassword",
-            "/resetpassword",
-            "/users"
+            "/resetpassword"
     );
 
     public Predicate<ServerHttpRequest> isSecured =

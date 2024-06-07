@@ -1,4 +1,4 @@
-package com.authentication.config.jpaUserDetailsService;
+package com.authentication.security.jpaUserDetailsService;
 
 import com.authentication.entities.AuthUser;
 import lombok.AllArgsConstructor;

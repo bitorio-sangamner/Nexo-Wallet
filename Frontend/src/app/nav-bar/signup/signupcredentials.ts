@@ -1,5 +1,5 @@
 export interface SignUpCredentials {
-    email: String;
-    password: String;
-    pin: number;
+    email: string;
+    password: string;
+    pin?: number;
 }

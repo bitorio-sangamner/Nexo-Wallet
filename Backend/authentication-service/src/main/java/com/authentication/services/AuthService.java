@@ -3,18 +3,18 @@ package com.authentication.services;
 import com.authentication.dao.AuthUserRepository;
 import com.authentication.dto.ApiResponse;
 import com.authentication.dto.AuthRequest;
-import com.authentication.dto.AuthResponse;
 import com.authentication.entities.AuthUser;
 import com.authentication.exceptions.EmailNotRegisteredException;
 import com.authentication.exceptions.EmailNotVerifiedException;
 import com.authentication.exceptions.InternalServerException;
 import com.authentication.exceptions.UnAuthorizedAccessException;
 import com.authentication.util.EmailUtil;
-import com.authentication.util.JwtUtil;
+import com.authentication.security.util.JwtUtil;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This class handles all the business logic for the login, registration, forgot password, reset password and verify
@@ -121,12 +122,12 @@ public class AuthService {
      * This method is used for log in the user into the system.
      *
      * @param authRequest record containing email and password and pin(if provided)
-     * @return ResponseEntity with ApiResponse object with String message, time the response have been sent, true for success and AuthResponse with jwt token.
+     * @return ResponseEntity with HTTPOnly cookie in headers containing JWT, time the response have been sent, true for success and AuthResponse with jwt token.
      * @throws EmailNotRegisteredException for attempting to log in with email not registered in system.
      * @throws EmailNotVerifiedException   for attempting to log in with email not verified by the system.
      */
     public ResponseEntity<ApiResponse> login(AuthRequest authRequest) {
-        // Check for, is the user registered
+        // Checks if the user is already registered
         AuthUser user = authUserRepository
                 .findByEmail(authRequest.email().toLowerCase())
                 .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
@@ -144,13 +145,21 @@ public class AuthService {
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
-        // var is used in place of AuthResponse
-        var response = new AuthResponse(
-                jwtUtil.generate(authRequest.email(), "User", "ACCESS")
-        );
+        // future code for starting new process if the user is already logged in.
+        if (user.isLoggedIn()) {
+            var apiResponse = new ApiResponse("User is already logged in.", "success", null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
 
-        var apiResponse = new ApiResponse("User logged in successfully", "success", response);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        user.setLoggedIn(true);
+        authUserRepository.save(user);
+
+        var apiResponse = new ApiResponse("User logged in successfully", "success", null);
+
+        var cookie = jwtUtil.generateJwtCookie(user.getEmail(), user.getRoles(), null);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(apiResponse);
     }
 
     /**
@@ -182,18 +191,20 @@ public class AuthService {
                 .orElseThrow(() -> new EmailNotRegisteredException(email + ":- Email is not registered.", HttpStatus.OK));
         user.setResetPasswordStateActive(true);
         user.setResetPasswordLinkGenerationTime(Instant.now().toEpochMilli());
-
+        AtomicReference<ApiResponse> apiResponse = new AtomicReference<>(new ApiResponse("Reset password link is sent to you registered email.", "success", null));
         // Asynchronously calls the sendResetPasswordEmail in emailUtil and to throw InternalServerException on any MessagingException error occurred during.
         CompletableFuture.runAsync(() -> emailUtil.sendResetPasswordEmail(email)).exceptionally(ex -> {
             if (ex instanceof MessagingException) {
-                user.setResetPasswordStateActive(false);
-                user.setResetPasswordLinkGenerationTime(0);
+                throw new InternalServerException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            throw new InternalServerException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            user.setResetPasswordStateActive(false);
+            user.setResetPasswordLinkGenerationTime(0);
+            apiResponse.set(new ApiResponse("Server are busy right now. Please try again later.", "fail", null));
+            return null;
         });
 
-        var apiResponse = new ApiResponse("Reset password link is sent to you registered email.", "success", null);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        authUserRepository.save(user);
+        return new ResponseEntity<>(apiResponse.get(), HttpStatus.OK);
     }
 
     /**
@@ -246,7 +257,7 @@ public class AuthService {
      * @throws EmailNotRegisteredException for attempting to use email not registered in system for resetting password.
      */
     public ResponseEntity<ApiResponse> verifyEmail(String email, String token) {
-        // Check for, is the user registered
+        // Checks if the user is already registered
         AuthUser user = authUserRepository
                 .findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
@@ -302,11 +313,34 @@ public class AuthService {
                 .body(String.class);
 
         System.out.println(result);
+        var apiResponse = new ApiResponse("Email is verified.", "success", null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 
+    /**
+     * This method is used for logging out the user from the system.
+     * @param email User who wished to be logged out.
+     * @return a API response with logged out message.
+     */
+    public ResponseEntity<ApiResponse> logout(String email) {
 
-            var apiResponse = new ApiResponse("Email is verified.", "success", null);
+        // Checks if the user is already registered
+        AuthUser user = authUserRepository
+                .findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
+
+        if (!user.isLoggedIn()) {
+            var apiResponse = new ApiResponse("You have to be logged in.","fail", null);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
 
+        user.setLoggedIn(false);
+        authUserRepository.save(user);
 
+        var apiResponse = new ApiResponse("You have been logged out successfully.","success", null);
+        var cookie = jwtUtil.getCleanJwtCookie();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(apiResponse);
     }
 }

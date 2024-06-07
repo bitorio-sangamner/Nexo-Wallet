@@ -1,15 +1,15 @@
-package com.authentication.config;
+package com.authentication.security;
 
-import com.authentication.config.filter.JwtAuthFilter;
-import com.authentication.config.jpaUserDetailsService.JpaUserDetailsService;
+import com.authentication.security.filter.JwtAuthFilter;
+import com.authentication.security.jpaUserDetailsService.JpaUserDetailsService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,14 +19,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @AllArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class WebSecurityConfig {
 
     private final JpaUserDetailsService jpaUserDetailsService;
@@ -47,7 +46,9 @@ public class WebSecurityConfig {
                         .requestMatchers(antMatcher("/login")).permitAll()
                         .requestMatchers(antMatcher("/verify")).permitAll()
                         .requestMatchers(antMatcher("/verify-email")).permitAll()
-                        .requestMatchers(antMatcher("/users")).permitAll()
+                        .requestMatchers(antMatcher("/forgotpassword")).permitAll()
+                        .requestMatchers(antMatcher("/resetpassword")).permitAll()
+                        .requestMatchers(antMatcher("/actuator/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -74,14 +75,4 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
-    @Bean
-    public RestClient restClient() {
-        return RestClient.create();
-        }
-    }
-
+}

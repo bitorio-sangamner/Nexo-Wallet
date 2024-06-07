@@ -1,29 +1,26 @@
 package com.authentication.controllers;
 
-import com.authentication.config.jpaUserDetailsService.JpaUserDetailsService;
 import com.authentication.dto.ApiResponse;
 import com.authentication.dto.AuthRequest;
 import com.authentication.services.AuthService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
+@Slf4j
 public class AuthController {
 
     private AuthService authService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody AuthRequest authRequest) {
-        logger.info("inside register controller");
         return authService.register(authRequest);
     }
 
@@ -55,12 +52,24 @@ public class AuthController {
     }
 
     @GetMapping("/forgotpassword")
-    public ResponseEntity<ApiResponse> forgotPassword(@RequestBody String email) {
+    public ResponseEntity<ApiResponse> forgotPassword(@RequestParam("email") String email) {
         return authService.forgotPassword(email);
     }
 
     @GetMapping("/resetpassword")
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody AuthRequest authRequest) {
+        System.out.println("inside reset password");
         return authService.resetPassword(authRequest);
+    }
+
+    @PostMapping("/logoff")
+    @PreAuthorize("hasAnyAuthority({'ADMIN','USER'})")
+    public ResponseEntity<ApiResponse> logout(@RequestParam("email") String email) {
+        return authService.logout(email);
+    }
+
+    @PostMapping("/hello")
+    public ResponseEntity<ApiResponse> hello() {
+        return new ResponseEntity<>(new ApiResponse("hello", "pass", new Integer(8)), HttpStatus.OK);
     }
 }

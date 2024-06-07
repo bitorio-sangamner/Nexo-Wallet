@@ -16,3 +16,7 @@ eureka:
       defaultZone: http://localhost:8083/eureka
     registerWithEureka: true
     fetchRegistry: true
+
+# JWT
+jwt:
+  secret: e07042972c539f933588c40f3f0c5620c335c3687b6dadd6aac1f191c1b04d0a

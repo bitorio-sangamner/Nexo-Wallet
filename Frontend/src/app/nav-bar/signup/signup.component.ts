@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../shared/services/auth.service';
 import { HttpClientModule } from '@angular/common/http';
-import { ToastrService } from 'ngx-toastr';
+import { ToasterService } from '../../shared/services/toaster.service';
 
 @Component({
   selector: 'signup',
@@ -30,19 +30,16 @@ export class SignupComponent {
     pin: new FormControl('', [Validators.minLength(6), Validators.maxLength(6)])
   });
 
-  constructor(private dialog: MatDialog, private authService: AuthService, private toastrService: ToastrService) {}
+  constructor(private dialog: MatDialog, private authService: AuthService, private toasterService: ToasterService) {}
 
   onSubmit(): void {
     if (this.signupForm.valid) {
-      // Here you can handle the signin logic
-      // For now, just close the dialog
       let email = this.signupForm.value.email;
       let password = this.signupForm.value.password;
       let pin = this.signupForm.value.pin;
       this.authService.register(this.signupForm.value).subscribe(result => {
-        console.log(result);
+        this.toasterService.createToaster(result.status, result.message);
       });
-      // console.log(this.authService.register(this.signupForm.value));
       this.dialog.closeAll(); // Close the dialog
     }
   }

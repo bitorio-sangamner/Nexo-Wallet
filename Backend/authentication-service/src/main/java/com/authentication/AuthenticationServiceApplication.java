@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Optional;
+
 
 @SpringBootApplication
 public class AuthenticationServiceApplication {
@@ -21,18 +23,18 @@ public class AuthenticationServiceApplication {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         return args -> {
-            boolean authUser = user.findByEmail("admin@yopmail.com").isPresent();
-            if (!authUser) {
-                user.save(AuthUser
-                        .builder()
+            Optional<AuthUser> authUser = user.findByEmail("admin@yopmail.com");
+            if (authUser.isEmpty()) {
+                authUser = Optional.ofNullable(AuthUser.builder()
                         .email("admin@yopmail.com")
                         .password(passwordEncoder.encode("password"))
                         .pin(1234567)
                         .isVerified(true)
                         .roles("ADMIN")
-                        .build()
-                );
+                        .build());
             }
+            authUser.get().setLoggedIn(false);
+            user.save(authUser.get());
         };
     }
 }

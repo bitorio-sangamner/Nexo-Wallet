@@ -1,4 +1,4 @@
-package com.authentication.util;
+package com.authentication.security.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +31,16 @@ public class JwtUtil {
     private String secret;
 
     /**
-     * Expiration time in seconds
+     * JWT expiration time in seconds
      */
     @Value("${jwt.expiration}")
     private String expiration;
+
+    @Value("${jwt.cookie.name}")
+    private String jwtCookieName;
+
+    @Value("${jwt.cookie.timeout}")
+    private int cookieTimeOutTime;
 
     /**
      * Secret key for JWT authentication
@@ -139,11 +146,41 @@ public class JwtUtil {
      *
      * @param token       JWT
      * @param userDetails user details of the user provided with JWT.
-     * @return true if correct token and false for incorrect.
+     * @return boolean for validating token
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = claimsExtractEmail(token);
         return (username.equals(userDetails.getUsername()) && isTokenExpired(token));
     }
 
+    /**
+     * This is used to return an HTTPOnly cookie with jwt token stored inside it.
+     *
+     * @param email
+     * @param role
+     * @param tokenType
+     * @return Cookie with the jwt token.
+     */
+    public ResponseCookie generateJwtCookie(String email, String role, String tokenType) {
+        String jwt = generate(email, role, tokenType);
+
+        return ResponseCookie.from(jwtCookieName, jwt)
+                .domain("localhost")
+                .path("/")
+                .maxAge(cookieTimeOutTime)
+                .httpOnly(true)
+                .build();
+    }
+
+    /**
+     * Clears the jwt from the HTTPOnly cookie by replacing it with null value.
+     *
+     * @return Cookie with null value in place of JWT token.
+     */
+    public ResponseCookie getCleanJwtCookie() {
+        return ResponseCookie.from(jwtCookieName)
+                .domain("localhost")
+                .path("/")
+                .build();
+    }
 }

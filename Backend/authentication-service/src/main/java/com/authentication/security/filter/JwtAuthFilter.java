@@ -1,8 +1,8 @@
-package com.authentication.config.filter;
+package com.authentication.security.filter;
 
-import com.authentication.config.jpaUserDetailsService.JpaUserDetailsService;
+import com.authentication.security.jpaUserDetailsService.JpaUserDetailsService;
 import com.authentication.exceptions.UnAuthorizedAccessException;
-import com.authentication.util.JwtUtil;
+import com.authentication.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,10 +29,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println(request.getMethod() + " - " + request.getRequestURI());
         String gatewayHeader = request.getHeader("From-Gateway");
-        String microserviceHeader = request.getHeader("From-Wallet");
-
-        if ((gatewayHeader == null || !(gatewayHeader.equals("true"))) && (microserviceHeader == null || !(microserviceHeader.equals("true")))) {
+        if (gatewayHeader == null || !gatewayHeader.equals("true")) {
+            System.out.println(gatewayHeader + " - " + request.getHeaderNames());
             throw new UnAuthorizedAccessException("You are not authorized for this service", HttpStatus.UNAUTHORIZED);
         }
 
