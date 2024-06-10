@@ -48,15 +48,14 @@ export class AuthService {
   }
 
   logoff(email: string) {
-    const httpHeader = new HttpHeaders();
-    httpHeader.append('Content-Type', 'application/json');
-    httpHeader.append('authorization', 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InVzZTFAeW9wbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsInN1YiI6InVzZTFAeW9wbWFpbC5jb20iLCJpYXQiOjE3MTc3NDk1MjUsImV4cCI6MTcxNzgzNTkyNX0.Asg_YcRN4IQjwW9xnP8x7GSrnsoA3Fv9DomanhbzJ28iABCm1sZfv7fei5RCcD7kGjdcl4n2dMHErt0GzdBaOQ');
-    return this.http.post<APIResponse>(
-      AUTH_API + '/logoff',
-      {
-        httpHeader,
-        params: new HttpParams().set('email', email)
-      }
-    )
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiQURNSU4iLCJlbWFpbCI6ImFkbWluQHlvcG1haWwuY29tIiwic3ViIjoiYWRtaW5AeW9wbWFpbC5jb20iLCJpYXQiOjE3MTc4MzgzNzAsImV4cCI6MTcxNzkyNDc3MH0.OC4D5kTwr22WYG6QVEnkrNUM9nUnmZ6R2XxTu7VWkh6LnhbrCTAYDKE6YyRHYlmElwpttO4mN9lOOPI-fJrYvg'
+      }),
+      params: new HttpParams().set('email', email)
+    };
+    var httpParam = new HttpParams().set('email', email);
+    return this.http.post<APIResponse>(AUTH_API + '/logoff', null, httpOptions);
   }
 }

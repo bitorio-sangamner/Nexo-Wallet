@@ -9,9 +9,6 @@ import {MatIconModule} from '@angular/material/icon';
 
 import { AuthService } from '../../shared/services/auth.service';
 import { APIResponse } from '../../shared/model/apiResponse';
-import { ToastrModule, ToastrService } from 'ngx-toastr';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SignUpCredentials } from '../signup/signupcredentials';
 import { ToasterService } from '../../shared/services/toaster.service';
 
 @Component({
@@ -39,7 +36,7 @@ export class LoginComponent {
 
   hide: boolean = true;
 
-  constructor(private dialogRef: MatDialogRef<LoginComponent>, private authService: AuthService, private toasterService: ToasterService) {}
+  constructor(private dialogRef: MatDialogRef<LoginComponent>, private authService: AuthService, private toasterService: ToasterService, private cookieService: CookieService) {}
 
   onSubmit(): void {
     let response: APIResponse;
@@ -53,7 +50,8 @@ export class LoginComponent {
       };
       
       this.authService.login(signUpCredentials).subscribe(result => {  
-        this.toasterService.createToaster(result.status, result.message)
+        this.toasterService.createToaster(result.status, result.message);
+        console.log(this.cookieService.get('X-AuthToken'));
         this.dialogRef.close({data: result, email: this.loginForm.value.email}); // Close the dialog
       });
     }

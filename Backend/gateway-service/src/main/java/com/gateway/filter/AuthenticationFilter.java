@@ -50,7 +50,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     throw new AuthenticationException("Unauthorized access to with wrong jwt token.", HttpStatus.UNAUTHORIZED);
                 }
             }
-            System.out.println(exchange.getRequest().getMethod() + " - " + exchange.getRequest().getURI());
             return chain.filter(exchange);
         }));
     }

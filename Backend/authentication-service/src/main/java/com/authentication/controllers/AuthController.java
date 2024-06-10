@@ -56,7 +56,7 @@ public class AuthController {
         return authService.forgotPassword(email);
     }
 
-    @GetMapping("/resetpassword")
+    @PostMapping("/resetpassword")
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody AuthRequest authRequest) {
         System.out.println("inside reset password");
         return authService.resetPassword(authRequest);
