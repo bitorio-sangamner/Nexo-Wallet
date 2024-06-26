@@ -16,5 +16,5 @@ import org.springframework.http.HttpStatusCode;
 @EqualsAndHashCode(callSuper = true)
 public class EmailNotRegisteredException extends RuntimeException {
     private final String message;
-    private final HttpStatusCode httpStatusCode;
+    private final int httpStatusCode;
 }

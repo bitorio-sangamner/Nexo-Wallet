@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginComponent } from './login/login.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../shared/services/auth.service';
 import { ToasterService } from '../shared/services/toaster.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'nav-bar',
@@ -16,12 +17,19 @@ import { ToasterService } from '../shared/services/toaster.service';
     MatIconModule,
     RouterModule
   ],
+  providers: [CookieService],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss'
 })
-export class NavBarComponent {
+export class NavBarComponent implements OnInit{
 
-  constructor(private dialog: MatDialog, private router: Router, private authService: AuthService, private toasterService: ToasterService) {}
+  constructor(private dialog: MatDialog, private router: Router, private authService: AuthService, private toasterService: ToasterService, private cookieService: CookieService) {  }
+
+  ngOnInit(): void {
+    if (this.isBrowser()) {
+      this.isLoggedIn = sessionStorage.getItem('loggedIn') === 'true'; 
+    }
+  }
 
   isLoggedIn: boolean = false;
 
@@ -31,12 +39,12 @@ export class NavBarComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.isLoggedIn = result.data.status === 'success';
-      if (result.data.message.includes("not verified") && result.data.status === "fail") {
-        this.router.navigate(['verification', {email: result.email}]);
+      if (!result) {
+        return;
       }
+      this.isLoggedIn = result === 'success';
       if (this.isLoggedIn)
-        sessionStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem('loggedIn', 'true');
     });
   }
 
@@ -51,12 +59,20 @@ export class NavBarComponent {
   }
 
   logout(): void {
-    this.authService.logoff("admin@yopmail.com").subscribe(result => {
-      if (result.status === "success" && result.message.includes("logged out successfully")) {
-        sessionStorage.setItem("loggedIn", "false");
+    console.log(JSON.stringify(this.cookieService.getAll()));
+    this.authService.logoff('admin@yopmail.com').subscribe(result => {
+      if (!result) {
+        return;
+      }
+      if (result.status === 'success' && result.message.includes('logged out successfully')) {
+        sessionStorage.setItem('loggedIn', 'false');
         this.isLoggedIn = false;
       }
       this.toasterService.createToaster(result.status, result.message);
     });
+  }
+
+  isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof sessionStorage !== 'undefined';
   }
 }

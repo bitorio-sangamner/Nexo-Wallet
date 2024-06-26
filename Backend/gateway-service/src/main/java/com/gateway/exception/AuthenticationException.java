@@ -11,5 +11,5 @@ import org.springframework.http.HttpStatusCode;
 public class AuthenticationException extends RuntimeException{
 
     private final String message;
-    private final HttpStatusCode httpStatusCode;
+    private final int httpStatusCode;
 }

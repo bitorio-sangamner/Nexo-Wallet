@@ -5,7 +5,6 @@ import { ToastrService } from 'ngx-toastr';
   providedIn: 'root'
 })
 export class ToasterService {
-
   constructor(private toastrService: ToastrService) { }
 
   createToaster(status: string, message: string): void {

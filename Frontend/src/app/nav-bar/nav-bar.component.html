@@ -1,17 +1,19 @@
 <nav class="nav-bar">
     <div class="home-button">
-        <button mat-raised-button color="primary" aria-label="Example icon button with a home icon">
-            <mat-icon>home</mat-icon>
+        <button mat-mini-fab aria-label="Example icon button with a home icon">
+            <mat-icon fontIcon="Home"></mat-icon>
         </button>
     </div>
     <div class="blanck"></div>
-        <button mat-stroked-button color="primary" routerLinkActive="active" routerLink="/market">Market</button>
-        <button mat-stroked-button color="primary" routerLinkActive="active" routerLink="/future">Future</button>
-        <button mat-stroked-button color="primary" routerLinkActive="active" routerLink="/earn">Earn</button>
+        @if (isLoggedIn) {
+            <button mat-raised-button extended color="primary" routerLinkActive="active" routerLink="/market">Market</button>
+            <button mat-flat-button extended color="primary" routerLinkActive="active" routerLink="/future">Future</button>
+            <button mat-stroked-button extended color="primary" routerLinkActive="active" routerLink="/earn">Earn</button>
+        }
     <div class="blanck"></div>
     <div class="user-settings">
         @if (!isLoggedIn) {
-            <button mat-stroked-button color="primary" (click)="openLoginDialog()">Login</button>
+            <button mat-raised-button color="primary" (click)="openLoginDialog()">Login</button>
             <button mat-raised-button color="primary" (click)="openSignupDialog()">Register</button>
         } @else {
             <button mat-raised-button color="primary" (click)="logout()">Logout</button>

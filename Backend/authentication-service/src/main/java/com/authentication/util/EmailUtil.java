@@ -38,7 +38,7 @@ public class EmailUtil {
             mimeMessageHelper.setFrom("no-reply@nexo.wallet");
             String text = """
                     <div>
-                       <a href="http://localhost:8383/resetpassword?email=%s" target="_blank">Click link to set password</a>
+                       <a href="http://localhost:4200/resetpassword?email=%s" target="_blank">Click link to set password</a>
                     </div>
                     """;
 
@@ -67,7 +67,7 @@ public class EmailUtil {
             mimeMessageHelper.setFrom("no-reply@nexo.wallet");
             String text = """
                     <div>
-                     <a href="http://localhost:8383/verify?email=%s&token=%s" target="_blank">Click here to Verify</a>
+                     <a href="http://localhost:4200/verify?email=%s&token=%s" target="_blank">Click here to Verify</a>
                     </div>
                     """;
 

@@ -5,7 +5,6 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../shared/services/auth.service';
-import { HttpClientModule } from '@angular/common/http';
 import { ToasterService } from '../../shared/services/toaster.service';
 
 @Component({
@@ -16,17 +15,18 @@ import { ToasterService } from '../../shared/services/toaster.service';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
-    HttpClientModule
+    MatButtonModule
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss'
 })
 export class SignupComponent {
 
+  strongPasswordRegx: RegExp = /^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d).{8,}$/;
+
   signupForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(25)]),
+    password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(25), Validators.pattern(this.strongPasswordRegx)]),
     pin: new FormControl('', [Validators.minLength(6), Validators.maxLength(6)])
   });
 

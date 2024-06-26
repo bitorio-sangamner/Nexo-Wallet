@@ -3,13 +3,12 @@
     width: 100%;
 
     .home-button {
-        justify-content: flex-start;
-
         button {
             width: 40px;
             height: 40px;
             min-width: 38px !important;
-            padding: 0px !important;
+            padding: 5%;
+            border-radius: 0px;
         }
     }
 
@@ -19,6 +18,10 @@
 
         button {
             height: 40px;
+            width: 40px;
+            min-width: 38px !important;
+            padding: 0px !important;
+            border-radius: 0px;
         }
     }
 
@@ -27,6 +30,9 @@
 
         button {
             height: 40px;
+            border-radius: 10px;
+            border: 1px;
+            margin: 0%;
         }
     }
 }

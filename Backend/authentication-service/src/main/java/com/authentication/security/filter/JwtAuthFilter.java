@@ -5,6 +5,7 @@ import com.authentication.exceptions.UnAuthorizedAccessException;
 import com.authentication.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -29,20 +30,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        System.out.println(request.getMethod() + " - " + request.getRequestURI());
+
         String gatewayHeader = request.getHeader("From-Gateway");
         if (gatewayHeader == null || !gatewayHeader.equals("true")) {
             System.out.println(gatewayHeader + " - " + request.getHeaderNames());
-            throw new UnAuthorizedAccessException("You are not authorized for this service", HttpStatus.UNAUTHORIZED);
+            throw new UnAuthorizedAccessException("You are not authorized for this service", HttpStatus.UNAUTHORIZED.value());
         }
 
-        String authHeader = request.getHeader("Authorization");
+        Cookie[] cookies = request.getCookies();
         String token = null;
         String email = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer")) {
-            token = authHeader.substring(7);
-            email = jwtUtil.claimsExtractEmail(token);
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("X-AuthToken".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    if (token != null) {
+                        email = jwtUtil.claimsExtractEmail(token);
+                    }
+                    break;
+                }
+            }
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -51,6 +59,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                System.out.println();
             }
         }
         filterChain.doFilter(request, response);

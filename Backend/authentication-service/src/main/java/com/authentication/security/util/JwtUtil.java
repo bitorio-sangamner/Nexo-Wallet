@@ -165,7 +165,6 @@ public class JwtUtil {
         String jwt = generate(email, role, tokenType);
 
         return ResponseCookie.from(jwtCookieName, jwt)
-                .domain("localhost")
                 .path("/")
                 .maxAge(cookieTimeOutTime)
                 .httpOnly(true)
@@ -179,8 +178,9 @@ public class JwtUtil {
      */
     public ResponseCookie getCleanJwtCookie() {
         return ResponseCookie.from(jwtCookieName)
-                .domain("localhost")
+                .maxAge(0)
                 .path("/")
+                .httpOnly(true)
                 .build();
     }
 }

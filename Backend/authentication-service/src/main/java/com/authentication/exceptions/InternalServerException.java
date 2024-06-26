@@ -10,5 +10,5 @@ import org.springframework.http.HttpStatusCode;
 @EqualsAndHashCode(callSuper = true)
 public class InternalServerException extends RuntimeException {
     private final String message;
-    private final HttpStatusCode httpStatusCode;
+    private final int httpStatusCode;
 }

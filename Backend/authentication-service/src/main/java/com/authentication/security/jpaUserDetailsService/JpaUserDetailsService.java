@@ -23,6 +23,6 @@ public class JpaUserDetailsService implements UserDetailsService {
         return authUserRepository
                 .findByEmail(email)
                 .map(SecurityUser::new)
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.CONFLICT));
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.CONFLICT.value()));
     }
 }

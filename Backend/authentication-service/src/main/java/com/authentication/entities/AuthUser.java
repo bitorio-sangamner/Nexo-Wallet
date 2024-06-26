@@ -1,6 +1,7 @@
 package com.authentication.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
@@ -17,12 +18,18 @@ public class AuthUser {
     @Column(name = "id")
     int id;
     @Column(unique = true, name = "email")
+    @NotNull
+    @Email
     String email;
 
     @Column(name = "password")
+    @Size(min = 6, max = 25)
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,16}$")
+    @NotNull
     String password;
 
     @Column(name = "pin")
+    @Digits(integer = 6, fraction = 0)
     int pin;
 
     @Column(name = "roles")

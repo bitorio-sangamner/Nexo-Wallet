@@ -6,7 +6,8 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideToastr } from 'ngx-toastr';
-import { authInterceptor, loggingInterceptor } from './auth.interceptor';
+import { loggingInterceptor, requestInterceptor, responseErrorInterceptor } from './auth.interceptor';
+import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,7 +16,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(
       withFetch(),
-    withInterceptors([loggingInterceptor, authInterceptor])),
-    provideToastr()
+    withInterceptors([requestInterceptor, loggingInterceptor, responseErrorInterceptor])),
+    provideToastr(), 
+    provideAnimationsAsync(),
+    {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
   ]
 };

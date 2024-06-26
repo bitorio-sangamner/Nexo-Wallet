@@ -3,6 +3,7 @@ package com.authentication.services;
 import com.authentication.dao.AuthUserRepository;
 import com.authentication.dto.ApiResponse;
 import com.authentication.dto.AuthRequest;
+import com.authentication.dto.ResetPasswordRequest;
 import com.authentication.entities.AuthUser;
 import com.authentication.exceptions.EmailNotRegisteredException;
 import com.authentication.exceptions.EmailNotVerifiedException;
@@ -56,8 +57,6 @@ public class AuthService {
      */
     private final EmailUtil emailUtil;
 
-    private RestTemplate restTemplate;
-
     private RestClient restClient;
 
     private final JwtUtil jwtUtil;
@@ -90,6 +89,7 @@ public class AuthService {
                 .isVerified(false)
                 .build();
         authUserRepository.save(user);
+        log.info("User registered successfully with email: {}", authRequest.email());
 
         var apiResponse = new ApiResponse(
                 "User Registered Successfully.",
@@ -114,6 +114,7 @@ public class AuthService {
         authUser.setVerifyToken(token);
         authUser.setVerifyEmailStateActive(true);
         authUserRepository.save(authUser);
+        log.info("User has started verification process with email: {}", email);
 
         emailUtil.sendVerifyEmail(email, token);
     }
@@ -130,11 +131,11 @@ public class AuthService {
         // Checks if the user is already registered
         AuthUser user = authUserRepository
                 .findByEmail(authRequest.email().toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK.value()));
 
         // Checks for, is the user verified
         if (!user.isVerified()) {
-            throw new EmailNotVerifiedException("Email is not verified.", HttpStatus.OK);
+            throw new EmailNotVerifiedException("Email is not verified.", HttpStatus.OK.value());
         }
 
         // Checks for, if the credentials are not correct
@@ -147,15 +148,15 @@ public class AuthService {
 
         // future code for starting new process if the user is already logged in.
         if (user.isLoggedIn()) {
-            var apiResponse = new ApiResponse("User is already logged in.", "success", null);
+            var apiResponse = new ApiResponse("User is already logged in.", "fail", null);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
         user.setLoggedIn(true);
         authUserRepository.save(user);
+        log.info("User logged in successfully with email: {}", authRequest.email());
 
         var apiResponse = new ApiResponse("User logged in successfully", "success", null);
-
         var cookie = jwtUtil.generateJwtCookie(user.getEmail(), user.getRoles(), null);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -188,18 +189,17 @@ public class AuthService {
         // Check for, is the user registered
         AuthUser user = authUserRepository
                 .findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException(email + ":- Email is not registered.", HttpStatus.OK));
+                .orElseThrow(() -> new EmailNotRegisteredException(email + ":- Email is not registered.", HttpStatus.OK.value()));
         user.setResetPasswordStateActive(true);
         user.setResetPasswordLinkGenerationTime(Instant.now().toEpochMilli());
         AtomicReference<ApiResponse> apiResponse = new AtomicReference<>(new ApiResponse("Reset password link is sent to you registered email.", "success", null));
+        log.info("User starting forgot password sequence with email: {}", email);
         // Asynchronously calls the sendResetPasswordEmail in emailUtil and to throw InternalServerException on any MessagingException error occurred during.
         CompletableFuture.runAsync(() -> emailUtil.sendResetPasswordEmail(email)).exceptionally(ex -> {
-            if (ex instanceof MessagingException) {
-                throw new InternalServerException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
             user.setResetPasswordStateActive(false);
             user.setResetPasswordLinkGenerationTime(0);
-            apiResponse.set(new ApiResponse("Server are busy right now. Please try again later.", "fail", null));
+            apiResponse.set(new ApiResponse("Server is busy right now. Please try again later.", "error", null));
+            log.info("The email util is unavailable or message service is not working");
             return null;
         });
 
@@ -210,26 +210,33 @@ public class AuthService {
     /**
      * This method is used to reset the user's password for the email.
      *
-     * @param authRequest record containing email and password and pin(if provided)
+     * @param resetPasswordRequest record containing email and password and pin(if provided)
      * @return ResponseEntity with ApiResponse object with String message, time the response have been sent, true for success and null for object.
      * Unauthorized http code on if the user has not started the forgot password routine.
      * Ok code if the link has expired or correct code processing.
      * @throws EmailNotRegisteredException for attempting to use email not registered in system for resetting password.
      * @throws InternalServerException     for reset password link email not been able to be sent to the email address.
      */
-    public ResponseEntity<ApiResponse> resetPassword(AuthRequest authRequest) {
+    public ResponseEntity<ApiResponse> resetPassword(ResetPasswordRequest resetPasswordRequest) {
         AuthUser user = authUserRepository
-                .findByEmail(authRequest.email().toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
+                .findByEmail(resetPasswordRequest.email().toLowerCase())
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK.value()));
 
         // Checks if the user has started the reset password routine
         if (!user.isResetPasswordStateActive()) {
-            throw new UnAuthorizedAccessException("Unauthorized access", HttpStatus.UNAUTHORIZED);
+            log.error("User attempting to resetting password without forget password initiating - {}", resetPasswordRequest);
+            throw new UnAuthorizedAccessException("Unauthorized access", HttpStatus.UNAUTHORIZED.value());
         }
 
-        long resetPasswordLinkExpirationTime = user.getResetPasswordLinkGenerationTime() + 300000;
+        if (!passwordEncoder.matches(resetPasswordRequest.oldPassword(), user.getPassword())) {
+            log.error("User attempting to reset password with invalid password - {}", resetPasswordRequest);
+            var apiResponse = new ApiResponse("Enter valid previous password.", "fail", null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
+
         user.setResetPasswordStateActive(false);
         user.setResetPasswordLinkGenerationTime(0);
+        long resetPasswordLinkExpirationTime = user.getResetPasswordLinkGenerationTime() + 300000;
 
         // Checks if the user is using the link which has been expired
         if (Instant.now().toEpochMilli() > resetPasswordLinkExpirationTime) {
@@ -238,8 +245,9 @@ public class AuthService {
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
-        user.setPassword(BCrypt.hashpw(authRequest.password(), BCrypt.gensalt()));
+        user.setPassword(BCrypt.hashpw(resetPasswordRequest.newPassword(), BCrypt.gensalt()));
         authUserRepository.save(user);
+        log.info("User has successfully reset password with email: {}", resetPasswordRequest.email());
 
         var apiResponse = new ApiResponse("Password reset successfully.", "success", null);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
@@ -260,7 +268,7 @@ public class AuthService {
         // Checks if the user is already registered
         AuthUser user = authUserRepository
                 .findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK.value()));
 
         // Checks if the user is already verified.
         if (user.isVerified()) {
@@ -270,7 +278,7 @@ public class AuthService {
 
         // Checks if the user unknowingly access the link even if he has not accessed this endpoint
         if (!user.isVerifyEmailStateActive()) {
-            throw new UnAuthorizedAccessException("Unauthorized access", HttpStatus.UNAUTHORIZED);
+            throw new UnAuthorizedAccessException("Unauthorized access", HttpStatus.UNAUTHORIZED.value());
         }
 
         long tokenExpirationTime = user.getVerifyEmailTokenGenerationTime() + 300000;
@@ -303,7 +311,7 @@ public class AuthService {
 
         user.setVerified(true);
         AuthUser authUser = authUserRepository.save(user);
-        
+        log.info("User has successfully verified his account with email: {}", email);
 //        String url1 = "http://localhost:8080/api/wallet/create/{userId}/{email}";
 //       String msg= String.valueOf(restTemplate.exchange(url1, HttpMethod.POST, null, String.class, authUser.getId(), authUser.getEmail()));
 
@@ -327,7 +335,7 @@ public class AuthService {
         // Checks if the user is already registered
         AuthUser user = authUserRepository
                 .findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK));
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK.value()));
 
         if (!user.isLoggedIn()) {
             var apiResponse = new ApiResponse("You have to be logged in.","fail", null);
@@ -337,6 +345,7 @@ public class AuthService {
         user.setLoggedIn(false);
         authUserRepository.save(user);
 
+        log.info("User has logged out of the system successfully with email: {}", email);
         var apiResponse = new ApiResponse("You have been logged out successfully.","success", null);
         var cookie = jwtUtil.getCleanJwtCookie();
         return ResponseEntity.ok()

@@ -6,12 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @RestControllerAdvice
@@ -21,16 +20,17 @@ public class AuthenticationExceptionHandler extends ResponseEntityExceptionHandl
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponse> handleAuthorizationHeaderException(final AuthenticationException exception) {
         log.error(String.format("Error message: %s", exception.getMessage()));
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
-        return new ResponseEntity<>(response, exception.getHttpStatusCode());
+        int httpStatusCode = exception.getHttpStatusCode();
+        var response = new ApiResponse("The Authorization token is timed out.", exception.getMessage(), httpStatusCode);
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(httpStatusCode));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleUnknownException(final Exception exception) {
         log.error(String.format("Error message: %s", exception.getMessage()));
-        exception.printStackTrace();
-        var response = new ApiResponse(exception.getMessage(), LocalDateTime.now(), false, null);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        int httpStatusCode = 500;
+        var response = new ApiResponse(null, "error", httpStatusCode);
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(httpStatusCode));
     }
 
 }

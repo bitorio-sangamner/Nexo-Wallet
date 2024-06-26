@@ -7,11 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Component
@@ -24,37 +26,25 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
     @Autowired
     private JwtUtil jwtUtil;
-    public AuthenticationFilter() {
-        super();
-    }
-
     @Override
     public GatewayFilter apply(Config config) {
 
         return (((exchange, chain) -> {
             if (routeValidator.isSecured.test(exchange.getRequest())) {
-                exchange.getRequest().getHeaders().forEach((k, v) -> System.out.println(k + " - " + v));
-                if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                    throw new AuthenticationException("Missing authorization header.", HttpStatus.UNAUTHORIZED);
+                Optional<HttpCookie> jwt = Optional.ofNullable(exchange.getRequest().getCookies().getFirst("X-AuthToken"));
+                if (jwt.isEmpty()) {
+                    System.out.println("Error");
+                    throw new AuthenticationException("Missing authorization token.", HttpStatus.UNAUTHORIZED.value());
                 }
-
-                String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
-                if (!(authHeader != null && authHeader.startsWith("Bearer"))) {
-                    log.error("Invalid access with no jwt token");
-                    throw new AuthenticationException("Unauthorized access to with no jwt token.", HttpStatus.UNAUTHORIZED);
-                }
-                authHeader = authHeader.substring(7);
-
-                if(!jwtUtil.validateToken(authHeader)) {
-                    log.error("Invalid access with jwt token: {}", authHeader);
-                    throw new AuthenticationException("Unauthorized access to with wrong jwt token.", HttpStatus.UNAUTHORIZED);
+                String authToken = jwt.get().getValue();
+                if(!jwtUtil.validateToken(authToken)) {
+                    log.error("Invalid access with jwt token: {}", authToken);
+                    throw new AuthenticationException("Your session has been expired", HttpStatus.OK.value());
                 }
             }
             return chain.filter(exchange);
         }));
     }
 
-    public static class Config {
-
-    }
+    public static class Config {}
 }
