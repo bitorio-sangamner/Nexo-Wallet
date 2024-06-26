@@ -1,5 +1,8 @@
 package com.wallet.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.bybit.api.client.domain.asset.request.AssetDataRequest;
+import com.bybit.api.client.restApi.BybitApiAssetRestClient;
 import com.wallet.entities.Currency;
 import com.wallet.entities.UserWallet;
 import com.wallet.exceptions.ResourceNotFoundException;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +32,9 @@ public class UserWalletServiceImpl implements UserWalletService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private BybitApiAssetRestClient bybitApiAssetRestClient;
     @Override
     public void createWallet(Long userId, String email) {
         try {
@@ -55,6 +62,79 @@ public class UserWalletServiceImpl implements UserWalletService {
             log.error("DataAccessException: {}", e.getMessage());
             throw new RuntimeException("Failed to create user wallet", e);
         }
+    }
+
+    @Override
+    public String createWallet(Long userId, String email,String subMemberId) {
+
+        try {
+            List<Currency> currencies = currencyRepository.findAll();
+            if (currencies.isEmpty()) {
+                throw new ResourceNotFoundException("Currencies not found");
+            }
+            currencies.forEach(currency -> {
+                log.info("Currency Name: {}", currency.getCurrencyName());
+                log.info("Currency Abbreviation: {}", currency.getCurrencyAbb());
+                String coin=currency.getCurrencyAbb();
+
+                AssetDataRequest assetDataRequest= AssetDataRequest.builder().coin(coin).build();
+                Object coinInfo=this.bybitApiAssetRestClient.getAssetCoinInfo(assetDataRequest);
+                //JSONObject coinInfo1= (JSONObject) this.bybitApiAssetRestClient.getAssetCoinInfo(assetDataRequest);
+
+                // Print the class name to understand what type of object is returned
+                System.out.println("Returned object class: " + coinInfo.getClass().getName());
+
+                // Use reflection to inspect the fields (optional, for debugging purposes)
+                for (Field field : coinInfo.getClass().getDeclaredFields()) {
+                    field.setAccessible(true);  // To access private fields
+                    try {
+                        System.out.println(field.getName() + " - " + field.get(coinInfo));
+                        if(field.getName().equals("chainType"))
+                        {
+                            AssetDataRequest assetDataRequest2= AssetDataRequest.builder().coin(coin).chainType(String.valueOf(field.get(coinInfo))).subMemberId(subMemberId).build();
+                             Object depositAddress=this.bybitApiAssetRestClient.getAssetSubMemberDepositAddress(assetDataRequest2);
+
+                            // Print the class name to understand what type of object is returned
+                            System.out.println("Returned object class: " + depositAddress.getClass().getName());
+
+                            // Use reflection to inspect the fields (optional, for debugging purposes)
+                            for (Field field2 : depositAddress.getClass().getDeclaredFields()) {
+                                field.setAccessible(true);  // To access private fields
+                                try {
+                                    System.out.println(field.getName() + " - " + field.get(depositAddress));
+
+                                    if(field.getName().equals("field.getName()"))
+                                    {
+                                        UserWallet userWallet = UserWallet.builder()
+                                                .walletAddress((String) field.get(depositAddress))
+                                                .currencyName(currency.getCurrencyName())
+                                                .currencyAbbr(currency.getCurrencyAbb())
+                                                .blockchainNetwork(currency.getBlockchainNetwork())
+                                                .userId(userId)
+                                                .userEmail(email)
+                                                .currency(currency)
+                                                .build();
+
+                                        userWalletRepository.save(userWallet);
+                                    }
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            });
+        } catch (DataAccessException e) {
+            log.error("DataAccessException: {}", e.getMessage());
+            throw new RuntimeException("Failed to create user wallet", e);
+        }
+        return null;
     }
 
     @Override

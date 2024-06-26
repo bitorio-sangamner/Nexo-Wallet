@@ -9,5 +9,6 @@ import java.util.List;
 public interface UserWalletService {
 
     void createWallet(Long userId,String email);
+    String createWallet(Long userId, String email,String subMemberId);
     List<UserWalletDto> getWallet(String userName);
 }

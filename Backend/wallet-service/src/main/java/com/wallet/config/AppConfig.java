@@ -1,12 +1,16 @@
 package com.wallet.config;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bybit.api.client.service.BybitApiClientFactory;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AppConfig {
+
+    private final String baseUrl="https://api.bybit.com";
+
 
     @Bean
     public ModelMapper modelMapper()
@@ -21,5 +25,11 @@ public class AppConfig {
     {
         return new JSONObject();
     }
+
+
+
+
+
+
 }
 

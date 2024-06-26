@@ -25,8 +25,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 
-
-
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -60,6 +59,7 @@ public class AuthService {
     private RestClient restClient;
 
     private final JwtUtil jwtUtil;
+
 
     /**
      * This method registers the user into system and starts verifying process for the user's account.
@@ -164,7 +164,7 @@ public class AuthService {
     }
 
     /**
-     * This method is used gor getting all users stored in authentication-service.
+     * This method is used for getting all users stored in authentication-service.
      * For ADMIN role only.
      * Priority update this method for large amount of users.
      *
@@ -311,12 +311,13 @@ public class AuthService {
 
         user.setVerified(true);
         AuthUser authUser = authUserRepository.save(user);
+
         log.info("User has successfully verified his account with email: {}", email);
-//        String url1 = "http://localhost:8080/api/wallet/create/{userId}/{email}";
-//       String msg= String.valueOf(restTemplate.exchange(url1, HttpMethod.POST, null, String.class, authUser.getId(), authUser.getEmail()));
+
+
 
         String result = restClient.post()
-                .uri("http://localhost:8080/api/wallet/create/{userId}/{email}", authUser.getId(), authUser.getEmail())
+                .uri("http://localhost:8080/api/subUser/create/{userId}/{email}/{password}", authUser.getId(), authUser.getEmail(),authUser.getPassword())
                 .retrieve()
                 .body(String.class);
 
@@ -324,6 +325,7 @@ public class AuthService {
         var apiResponse = new ApiResponse("Email is verified.", "success", null);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
 
     /**
      * This method is used for logging out the user from the system.

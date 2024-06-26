@@ -24,6 +24,13 @@ public class UserWalletController {
     @Autowired
     private UserWalletBalanceService userWalletBalanceService;
 
+    @PostMapping("/create/{userId}/{email}/{subMemberId}")
+    public String createWallet(@PathVariable Long userId, @PathVariable String email,@PathVariable String subMemberId)
+    {
+        log.info("inside createWallet controller...");
+        userWalletService.createWallet(userId,email,subMemberId);
+        return "Wallet created successfully";
+    }
     @PostMapping("/create/{userId}/{email}")
     public String createUserWallet(@PathVariable Long userId, @PathVariable String email)
     {
