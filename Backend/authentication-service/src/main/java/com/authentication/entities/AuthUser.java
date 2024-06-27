@@ -24,9 +24,10 @@ public class AuthUser {
 
     @Column(name = "password")
     @Size(min = 6, max = 25)
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,16}$")
+   // @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,16}$")
     @NotNull
     String password;
+
 
     @Column(name = "pin")
     @Digits(integer = 6, fraction = 0)

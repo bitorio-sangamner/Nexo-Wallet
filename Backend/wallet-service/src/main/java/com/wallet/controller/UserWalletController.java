@@ -25,11 +25,17 @@ public class UserWalletController {
     private UserWalletBalanceService userWalletBalanceService;
 
     @PostMapping("/create/{userId}/{email}/{subMemberId}")
-    public String createWallet(@PathVariable Long userId, @PathVariable String email,@PathVariable String subMemberId)
+    public ResponseEntity<Object> createWallet(@PathVariable Long userId, @PathVariable String email,@PathVariable String subMemberId)
     {
         log.info("inside createWallet controller...");
-        userWalletService.createWallet(userId,email,subMemberId);
-        return "Wallet created successfully";
+        String message=userWalletService.createWallet(userId,email,subMemberId);
+        if(message.equals("Wallet created successfully!!")) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponse(message, true));
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse("An unexpected error occurred", false));
     }
     @PostMapping("/create/{userId}/{email}")
     public String createUserWallet(@PathVariable Long userId, @PathVariable String email)
