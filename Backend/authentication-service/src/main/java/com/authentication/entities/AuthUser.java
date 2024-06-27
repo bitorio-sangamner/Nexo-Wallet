@@ -26,6 +26,7 @@ public class AuthUser {
     @NotNull
     String password;
 
+
     @Column(name = "pin")
     int pin;
 

@@ -317,7 +317,7 @@ public class AuthService {
 
 
         String result = restClient.post()
-                .uri("http://localhost:8080/api/subUser/create/{userId}/{email}/{password}", authUser.getId(), authUser.getEmail(),authUser.getPassword())
+                .uri("http://localhost:8080/api/subUser/create/{userId}/{email}/{password}", user.getId(), user.getEmail(),user.getPassword())
                 .retrieve()
                 .body(String.class);
 

@@ -1,6 +1,5 @@
 package com.wallet.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.bybit.api.client.domain.asset.request.AssetDataRequest;
 import com.bybit.api.client.restApi.BybitApiAssetRestClient;
 import com.wallet.entities.Currency;
@@ -15,10 +14,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -78,63 +76,60 @@ public class UserWalletServiceImpl implements UserWalletService {
                 String coin=currency.getCurrencyAbb();
 
                 AssetDataRequest assetDataRequest= AssetDataRequest.builder().coin(coin).build();
-                Object coinInfo=this.bybitApiAssetRestClient.getAssetCoinInfo(assetDataRequest);
-                //JSONObject coinInfo1= (JSONObject) this.bybitApiAssetRestClient.getAssetCoinInfo(assetDataRequest);
+                Map<String, Object> coinInfo= (Map<String, Object>) this.bybitApiAssetRestClient.getAssetCoinInfo(assetDataRequest);
+                System.out.println("coinInfo :"+coinInfo);
 
-                // Print the class name to understand what type of object is returned
-                System.out.println("Returned object class: " + coinInfo.getClass().getName());
+                Map<String, Object> result = (Map<String, Object>) coinInfo.get("result");
+                List<Map<String, Object>> rows = (List<Map<String, Object>>) result.get("rows");
 
-                // Use reflection to inspect the fields (optional, for debugging purposes)
-                for (Field field : coinInfo.getClass().getDeclaredFields()) {
-                    field.setAccessible(true);  // To access private fields
-                    try {
-                        System.out.println(field.getName() + " - " + field.get(coinInfo));
-                        if(field.getName().equals("chainType"))
-                        {
-                            AssetDataRequest assetDataRequest2= AssetDataRequest.builder().coin(coin).chainType(String.valueOf(field.get(coinInfo))).subMemberId(subMemberId).build();
-                             Object depositAddress=this.bybitApiAssetRestClient.getAssetSubMemberDepositAddress(assetDataRequest2);
+                if (rows != null && !rows.isEmpty()) {
+                    Map<String, Object> firstRow = rows.get(0);
+                    List<Map<String, Object>> chainsList = (List<Map<String, Object>>) firstRow.get("chains");
+                    String byBitCoin= (String) firstRow.get("coin");
 
-                            // Print the class name to understand what type of object is returned
-                            System.out.println("Returned object class: " + depositAddress.getClass().getName());
+                    System.out.println("byBitCoin :"+byBitCoin);
 
-                            // Use reflection to inspect the fields (optional, for debugging purposes)
-                            for (Field field2 : depositAddress.getClass().getDeclaredFields()) {
-                                field.setAccessible(true);  // To access private fields
-                                try {
-                                    System.out.println(field.getName() + " - " + field.get(depositAddress));
+                    if (chainsList != null && !chainsList.isEmpty()) {
+                        Map<String, Object> chainInfo = chainsList.get(0);
+                        String chainType = (String) chainInfo.get("chain");
+                        System.out.println("chain type :" + chainType);
 
-                                    if(field.getName().equals("field.getName()"))
-                                    {
-                                        UserWallet userWallet = UserWallet.builder()
-                                                .walletAddress((String) field.get(depositAddress))
-                                                .currencyName(currency.getCurrencyName())
-                                                .currencyAbbr(currency.getCurrencyAbb())
-                                                .blockchainNetwork(currency.getBlockchainNetwork())
-                                                .userId(userId)
-                                                .userEmail(email)
-                                                .currency(currency)
-                                                .build();
+                        AssetDataRequest assetDataRequest1=AssetDataRequest.builder().coin(byBitCoin).subMemberId(subMemberId).chainType(chainType).build();
+                        Map<String, Object> depositAddressResponse= (Map<String, Object>) this.bybitApiAssetRestClient.getAssetSubMemberDepositAddress(assetDataRequest1);
 
-                                        userWalletRepository.save(userWallet);
-                                    }
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
-                                }
+                        System.out.println("depositAddressResponse :"+depositAddressResponse);
+                        Map<String, Object> depositAddressResult = (Map<String, Object>) depositAddressResponse.get("result");
+                        if (depositAddressResult != null) {
+                            Map<String, Object> chains = (Map<String, Object>)depositAddressResult.get("chains");
+                            if (chains != null) {
+                                String depositAddress=(String) chains.get("addressDeposit");
+                                UserWallet userWallet = UserWallet.builder()
+                                        .walletAddress(depositAddress)
+                                        .currencyName(currency.getCurrencyName())
+                                        .currencyAbbr(currency.getCurrencyAbb())
+                                        .blockchainNetwork(currency.getBlockchainNetwork())
+                                        .userId(userId)
+                                        .userEmail(email)
+                                        .currency(currency)
+                                        .build();
+
+                                userWalletRepository.save(userWallet);
                             }
-
                         }
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                    } else {
+                        System.out.println("No chains available");
                     }
+                } else {
+                    System.out.println("No rows available");
                 }
-
-
             });
-        } catch (DataAccessException e) {
+            return "Wallet created successfully!!";
+        }
+        catch (DataAccessException e) {
             log.error("DataAccessException: {}", e.getMessage());
             throw new RuntimeException("Failed to create user wallet", e);
         }
-        return null;
+
     }
 
     @Override

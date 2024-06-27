@@ -1,6 +1,7 @@
 package com.wallet.controller;
 
 import com.wallet.service.SubUserService;
+import com.wallet.service.UserWalletService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,10 @@ public class SubUserController {
 
     @Autowired
     private SubUserService subUserService;
+
+    @Autowired
+    private UserWalletService userWalletService;
+
     @PostMapping("/create/{userId}/{email}/{password}")
     public String createSubUserOnBybit(@PathVariable Long userId, @PathVariable String email, @PathVariable String password)
     {
@@ -30,9 +35,13 @@ public class SubUserController {
             System.out.println(entry.getKey() + " - " + entry.getValue());
         }
 
-        if(subUserOnBybit!=null) {
-            if (subUserOnBybit.containsKey("uid")) {
-                String subUserId = (String) subUserOnBybit.get("uid");
+        if (subUserOnBybit.containsKey("result")) {
+            Map<String, Object> result = (Map<String, Object>) subUserOnBybit.get("result");
+
+            if (result != null) {
+                String subUserId = result.get("uid").toString();
+                String message=this.userWalletService.createWallet(userId,email,subUserId);
+                return message;
             }
         }
         return null;
