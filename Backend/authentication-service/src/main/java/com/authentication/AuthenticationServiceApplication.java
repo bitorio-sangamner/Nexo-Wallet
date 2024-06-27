@@ -28,7 +28,7 @@ public class AuthenticationServiceApplication {
                 authUser = Optional.ofNullable(AuthUser.builder()
                         .email("admin@yopmail.com")
                         .password(passwordEncoder.encode("Password@1234"))
-                        .pin(1234567)
+                        .pin(123456)
                         .isVerified(true)
                         .roles("ADMIN")
                         .build());
