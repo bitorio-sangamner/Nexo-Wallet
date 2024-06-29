@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -37,35 +36,12 @@ public class UserWalletController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse("An unexpected error occurred", false));
     }
-    @PostMapping("/create/{userId}/{email}")
-    public String createUserWallet(@PathVariable Long userId, @PathVariable String email)
-    {
-        try {
-            log.info("inside createUserWallet...");
-            userWalletService.createWallet(userId, email);
-            userWalletBalanceService.createUserWalletBalance(userId, email);
-            return "Wallet created successfully";
-        }
-        catch(Exception e)
-        {
-            // Log the exception
-            log.error(String.valueOf(e));
-            e.printStackTrace();
-            return "Failed to create wallet";
-        }
-
-
-    }
 
     @GetMapping("/getWallet/{userName}")
     public ResponseEntity<Object> getUserWallet(@PathVariable String userName) {
-        try {
-              List<UserWalletDto> userWalletDtoList=this.userWalletService.getWallet(userName);
-            return ResponseEntity.ok(userWalletDtoList);
-        }
-        catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("An unexpected error occurred", false));
-        }
+
+          List<UserWalletDto> userWalletDtoList=this.userWalletService.getWallet(userName);
+          return ResponseEntity.ok(userWalletDtoList);
+
     }
 }

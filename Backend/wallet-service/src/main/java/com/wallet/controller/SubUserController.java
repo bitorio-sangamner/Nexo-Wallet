@@ -35,13 +35,16 @@ public class SubUserController {
             System.out.println(entry.getKey() + " - " + entry.getValue());
         }
 
-        if (subUserOnBybit.containsKey("result")) {
-            Map<String, Object> result = (Map<String, Object>) subUserOnBybit.get("result");
+        if(subUserOnBybit!=null) {
+            if (subUserOnBybit.containsKey("result")) {
 
-            if (result != null) {
-                String subUserId = result.get("uid").toString();
-                String message=this.userWalletService.createWallet(userId,email,subUserId);
-                return message;
+                Map<String, Object> result = (Map<String, Object>) subUserOnBybit.get("result");
+
+                if (result != null && result.containsKey("uid")) {
+                    String subUserId = result.get("uid").toString();
+                    String message = this.userWalletService.createWallet(userId, email, subUserId);
+                    return message;
+                }
             }
         }
         return null;
