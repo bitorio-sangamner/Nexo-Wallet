@@ -19,15 +19,15 @@ public class GlobalExceptionHandler {
     {
         logger.error("GlobalException: {}", exception);
         String message=exception.getMessage();
-        ApiResponse apiResponse=new ApiResponse(message,false);
-        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.NOT_FOUND);
+        ApiResponse apiResponse=new ApiResponse(message,false,null);
+        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleGlobalException(Exception exception)
     {
         logger.error("GlobalException: {}", exception);
         String message= exception.getMessage();
-        ApiResponse apiResponse=new ApiResponse(message,false);
+        ApiResponse apiResponse=new ApiResponse(message,false,null);
         return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     {
         logger.error("GlobalException: {}", exception);
         String message=exception.getMessage();
-        ApiResponse apiResponse=new ApiResponse(message,false);
+        ApiResponse apiResponse=new ApiResponse(message,false,null);
         return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

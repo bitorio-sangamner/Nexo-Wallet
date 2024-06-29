@@ -123,7 +123,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             // Fetch all currencies from the repository
             List<Currency> currencies = currencyRepository.findAll();
             if (currencies.isEmpty()) {
-                throw new ResourceNotFoundException("Currencies not found");
+                throw new ResourceNotFoundException("Currencies not found",false);
             }
 
             // Process each currency
@@ -260,7 +260,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             return userWalletToDtoList;
         } else {
             log.info("User wallet list is empty for user: {}", userName);
-            throw new ResourceNotFoundException("User wallet not found for user: " + userName);
+            throw new ResourceNotFoundException("User wallet not found for user: " + userName,false);
         }
     }
     public UserWalletDto walletToDto(UserWallet wallet) {

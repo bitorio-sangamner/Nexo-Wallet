@@ -4,6 +4,7 @@ import com.wallet.entities.Currency;
 import com.wallet.entities.UserWallet;
 import com.wallet.entities.UserWalletBalance;
 import com.wallet.exceptions.ResourceNotFoundException;
+import com.wallet.payloads.ApiResponse;
 import com.wallet.payloads.UserWalletBalanceDto;
 import com.wallet.payloads.UserWalletDto;
 import com.wallet.repositories.CurrencyRepository;
@@ -12,6 +13,8 @@ import com.wallet.service.UserWalletBalanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -104,7 +107,7 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
         if (userWalletBalance != null) {
             return this.userWalletBalanceToDto(userWalletBalance);
         } else {
-            throw new ResourceNotFoundException("User wallet balance not found for email: " + email + " and currency: " + currencyName);
+            throw new ResourceNotFoundException("User wallet balance not found for email: " + email + " and currency: " + currencyName,false);
         }
     }
 
@@ -113,7 +116,11 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
         List<UserWalletBalance> userWalletBalanceList=this.userWalletBalanceRepository.findByEmail(email);
         if (userWalletBalanceList.isEmpty()) {
             log.info("No wallet balances found for email: {}", email);
-            throw new ResourceNotFoundException("User wallet not found for user: " + email);
+            var apiResponse = new ApiResponse(
+                    "No wallet balances found for email: {}" +email,
+                    false,null);
+
+            throw new ResourceNotFoundException("User wallet not found for user: " + email,false);
 
         }
         List<UserWalletBalanceDto> userWalletBalanceDtoList = new ArrayList<>();

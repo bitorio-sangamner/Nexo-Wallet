@@ -1,11 +1,13 @@
 package com.wallet.controller;
 
+import com.wallet.payloads.ApiResponse;
 import com.wallet.payloads.UserWalletBalanceDto;
-import com.wallet.payloads.UserWalletDto;
 import com.wallet.service.UserWalletBalanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +33,11 @@ public class UserWalletBalanceController {
     public ResponseEntity<Object> getUserWalletBalance(@PathVariable String userName)
     {
         List<UserWalletBalanceDto> userWalletBalanceDtoList=this.userWalletBalanceService.getWalletBalance(userName);
-        return ResponseEntity.ok(userWalletBalanceDtoList);
+        var apiResponse = new ApiResponse(
+                "User wallet data",
+                true,userWalletBalanceDtoList);
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+
     }
 
 
