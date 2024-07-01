@@ -17,26 +17,26 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse> resourceNotFoundExceptionHandler(ResourceNotFoundException exception)
     {
-        logger.error("GlobalException: {}", exception);
+        logger.error("GlobalException: {}", exception.getMessage());
         String message=exception.getMessage();
-        ApiResponse apiResponse=new ApiResponse(message,false,null);
-        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponse apiResponse=new ApiResponse(message,"error",null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleGlobalException(Exception exception)
     {
-        logger.error("GlobalException: {}", exception);
+        logger.error("GlobalException: {}", exception.getMessage());
         String message= exception.getMessage();
-        ApiResponse apiResponse=new ApiResponse(message,false,null);
-        return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponse apiResponse=new ApiResponse(message,"error",null);
+        return new ResponseEntity<>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(CurrencySaveException.class)
     public ResponseEntity<ApiResponse> handleCurrencySaveException(CurrencySaveException exception)
     {
-        logger.error("GlobalException: {}", exception);
+        logger.error("GlobalException: {}", exception.getMessage());
         String message=exception.getMessage();
-        ApiResponse apiResponse=new ApiResponse(message,false,null);
-        return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponse apiResponse=new ApiResponse(message,"error",null);
+        return new ResponseEntity<>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

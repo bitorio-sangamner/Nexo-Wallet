@@ -31,6 +31,7 @@ public class SubUserServiceImpl implements SubUserService {
          try {
              //var subUser1 = bybitApiUserRestClient.createSubMember(subUserRequest);
              Map<String, Object> subUserResponse = (Map<String, Object>) bybitApiUserRestClient.createSubMember(subUserRequest);
+             var subUser = bybitApiUserRestClient.createSubMember(subUserRequest);
 
              // Print the class name to understand what type of object is returned
              System.out.println("Returned object class: " + subUserResponse.getClass().getName());

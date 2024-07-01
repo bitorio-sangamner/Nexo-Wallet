@@ -30,11 +30,11 @@ public class UserWalletController {
         String message=userWalletService.createWallet(userId,email,subMemberId);
         if(message.equals("Wallet created successfully!!")) {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ApiResponse(message, true,null));
+                    .body(new ApiResponse(message, "success",null));
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse("An unexpected error occurred", false,null));
+                .body(new ApiResponse("An unexpected error occurred", "error",null));
     }
 
     @GetMapping("/getWallet/{userName}")

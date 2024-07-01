@@ -21,40 +21,23 @@ import { CookieService } from 'ngx-cookie-service';
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss'
 })
-export class NavBarComponent implements OnInit{
+export class NavBarComponent{
 
   constructor(private dialog: MatDialog, private router: Router, private authService: AuthService, private toasterService: ToasterService, private cookieService: CookieService) {  }
 
-  ngOnInit(): void {
-    if (this.isBrowser()) {
-      this.isLoggedIn = sessionStorage.getItem('loggedIn') === 'true'; 
-    }
+  isLoggedIn(): boolean {
+    return sessionStorage.getItem('loggedIn') === 'true';
   }
-
-  isLoggedIn: boolean = false;
 
   openLoginDialog(): void {
     const dialogRef = this.dialog.open(LoginComponent, {
       width: '350px'
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (!result) {
-        return;
-      }
-      this.isLoggedIn = result === 'success';
-      if (this.isLoggedIn)
-        sessionStorage.setItem('loggedIn', 'true');
     });
   }
 
   openSignupDialog(): void {
     const dialogRef = this.dialog.open(SignupComponent, {
       width: '350px'
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
     });
   }
 
@@ -66,7 +49,6 @@ export class NavBarComponent implements OnInit{
       }
       if (result.status === 'success' && result.message.includes('logged out successfully')) {
         sessionStorage.setItem('loggedIn', 'false');
-        this.isLoggedIn = false;
       }
       this.toasterService.createToaster(result.status, result.message);
     });

@@ -5,7 +5,7 @@
         </button>
     </div>
     <div class="blanck"></div>
-        @if (isLoggedIn) {
+        @if (isLoggedIn()) {
             <button mat-raised-button extended color="primary" routerLinkActive="active" routerLink="/market">Market</button>
             <button mat-flat-button extended color="primary" routerLinkActive="active" routerLink="/future">Future</button>
             <button mat-stroked-button extended color="primary" routerLinkActive="active" routerLink="/earn">Earn</button>

@@ -38,15 +38,16 @@ export class LoginComponent {
               private toasterService: ToasterService, 
               private dialog: MatDialog,
               private router: Router) {}
+              
+  strongPasswordRegx: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,25}$/;
 
   readonly loginForm = new FormGroup({
     email: new FormControl<string>('', [Validators.required, Validators.email]),
-    password: new FormControl<string>('', [Validators.required, Validators.minLength(6), Validators.maxLength(25)]),
+    password: new FormControl<string>('', [Validators.required, Validators.minLength(6), Validators.maxLength(25), Validators.pattern(this.strongPasswordRegx)]),
     pin: new FormControl<number>(0, [Validators.minLength(6), Validators.maxLength(6)])
   });
 
   hide: boolean = true;
-
   buttonCLicked: string = 'no';
 
   onSubmit(): void {
@@ -70,12 +71,15 @@ export class LoginComponent {
       this.authService.login(signUpCredentials).subscribe(result => {  
         this.toasterService.createToaster(result.status, result.message);
         console.log(result);
-        this.dialogRef.close(result.status);
         if (!result.message) {
           return;
         }
-        if (result.message.includes('verified')) {
+        if (result.message.includes('not verified')) {
           this.router.navigate(['verification', {email: this.loginForm.get('email')?.value}]);
+        }
+        if (result.status === 'success' && result.message.includes('logged in successfully')){
+          sessionStorage.setItem('loggedIn', 'true');
+          this.router.navigate(['dashboard']);
         }
       });
     }

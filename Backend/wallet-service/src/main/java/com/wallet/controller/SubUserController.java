@@ -42,8 +42,7 @@ public class SubUserController {
 
                 if (result != null && result.containsKey("uid")) {
                     String subUserId = result.get("uid").toString();
-                    String message = this.userWalletService.createWallet(userId, email, subUserId);
-                    return message;
+                    return this.userWalletService.createWallet(userId, email, subUserId);
                 }
             }
         }

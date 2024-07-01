@@ -5,6 +5,7 @@ import com.authentication.dto.AuthRequest;
 import com.authentication.dto.ResetPasswordRequest;
 import com.authentication.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class AuthController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<ApiResponse> verifyEmail(@RequestParam("email") String email, @RequestParam("token") String token, HttpServletRequest servletRequest) {
+    public ResponseEntity<ApiResponse> verifyEmail(@RequestParam("email") @Email String email, @RequestParam("token") String token, HttpServletRequest servletRequest) {
         log.info("User verifying from ip address: {} and email: {}", servletRequest.getRemoteAddr(), email);
         return authService.verifyEmail(email, token);
     }
@@ -57,7 +58,7 @@ public class AuthController {
     }
 
     @GetMapping("/forgotpassword")
-    public ResponseEntity<ApiResponse> forgotPassword(@RequestParam("email") String email, HttpServletRequest servletRequest) {
+    public ResponseEntity<ApiResponse> forgotPassword(@RequestParam("email") @Email String email, HttpServletRequest servletRequest) {
         log.info("User resetting password from ip address: {} and email: {}", servletRequest.getRemoteAddr(), email);
         return authService.forgotPassword(email);
     }
@@ -70,7 +71,7 @@ public class AuthController {
 
     @PostMapping("/logoff")
     @PreAuthorize("hasAnyAuthority({'ADMIN','USER'})")
-    public ResponseEntity<ApiResponse> logout(@RequestParam("email") String email, HttpServletRequest servletRequest) {
+    public ResponseEntity<ApiResponse> logout(@RequestParam("email") @Email String email, HttpServletRequest servletRequest) {
         return authService.logout(email);
     }
 }

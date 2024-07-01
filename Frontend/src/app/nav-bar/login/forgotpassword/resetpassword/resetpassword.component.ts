@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-resetpassword',
@@ -25,17 +26,19 @@ import { MatIconModule } from '@angular/material/icon';
 export class ResetPasswordComponent {
   constructor(private authService: AuthService, 
     private dialog: MatDialog,
-    private toasterService: ToasterService) {
+    private toasterService: ToasterService,
+    private cookieService: CookieService) {
     }
 
   phide : boolean = true;
   rphide : boolean = true;
   ophide : boolean = true;
+  strongPasswordRegx: RegExp = /^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d).{8,}$/;
 
   readonly forgotPasswordForm = new FormGroup({
     email: new FormControl<string>('', [Validators.required, Validators.email]),
-    oldPassword: new FormControl<string>('', [Validators.required, Validators.minLength(8), Validators.maxLength(25)]),
-    newPassword: new FormControl<string>('', [Validators.required, Validators.minLength(8), Validators.maxLength(25)]),
+    oldPassword: new FormControl<string>('', [Validators.required, Validators.minLength(8), Validators.maxLength(25), Validators.pattern(this.strongPasswordRegx)]),
+    newPassword: new FormControl<string>('', [Validators.required, Validators.minLength(8), Validators.maxLength(25), Validators.pattern(this.strongPasswordRegx)]),
     retypePassword: new FormControl<string>('', [Validators.required, Validators.minLength(8), Validators.maxLength(25)])
   });
 
@@ -46,6 +49,7 @@ export class ResetPasswordComponent {
     const newpassword: string = this.forgotPasswordForm.get('newPassword')?.value ?? '';
     const retypePassword: string = this.forgotPasswordForm.get('retypePassword')?.value ?? '';
     if (newpassword !== retypePassword) {
+      this.toasterService.createToaster("fail", "Please type same password in retype password.")
       return;
     }
     if (this.forgotPasswordForm.valid && newpassword === retypePassword) {

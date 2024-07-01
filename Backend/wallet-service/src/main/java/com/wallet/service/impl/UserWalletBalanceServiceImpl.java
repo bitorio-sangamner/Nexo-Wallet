@@ -116,12 +116,9 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
         List<UserWalletBalance> userWalletBalanceList=this.userWalletBalanceRepository.findByEmail(email);
         if (userWalletBalanceList.isEmpty()) {
             log.info("No wallet balances found for email: {}", email);
-            var apiResponse = new ApiResponse(
-                    "No wallet balances found for email: {}" +email,
-                    false,null);
+            var apiResponse = new ApiResponse("No wallet balances found for email: {}" + email, "error",null);
 
             throw new ResourceNotFoundException("User wallet not found for user: " + email,false);
-
         }
         List<UserWalletBalanceDto> userWalletBalanceDtoList = new ArrayList<>();
         for (UserWalletBalance walletBalance : userWalletBalanceList) {
@@ -129,7 +126,6 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
             userWalletBalanceDtoList.add(walletBalanceDto);
         }
         return userWalletBalanceDtoList;
-
     }
 
     /**

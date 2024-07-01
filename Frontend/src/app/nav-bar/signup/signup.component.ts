@@ -22,7 +22,7 @@ import { ToasterService } from '../../shared/services/toaster.service';
 })
 export class SignupComponent {
 
-  strongPasswordRegx: RegExp = /^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d).{8,}$/;
+  strongPasswordRegx: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,25}$/;
 
   signupForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),

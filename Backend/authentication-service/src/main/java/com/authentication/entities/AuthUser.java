@@ -18,16 +18,16 @@ public class AuthUser {
     @Column(name = "id")
     int id;
     @Column(unique = true, name = "email")
-    @NotNull
-    @Email
+    @NotNull(message = "The email should be not null.")
+    @Email(message = "The email should be of email format.")
     String email;
 
     @Column(name = "password")
-    @NotNull
+    @NotNull(message = "The email should be not null.")
     String password;
 
-
     @Column(name = "pin")
+    @Digits(integer = 6, fraction = 0, message = "The pin must contain only 6 digits.")
     int pin;
 
     @Column(name = "roles")
