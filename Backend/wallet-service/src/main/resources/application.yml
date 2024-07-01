@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: wallet
+
+  #db configuration
+  datasource:
+    url: jdbc:mysql://localhost:3306/nexo_wallet_dev
+    username: root
+    password: W7301@vai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  # create , update , create-drop , validate
+    hibernate:
+      ddl-auto: update
+    show-sql: true
