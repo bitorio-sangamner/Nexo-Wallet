@@ -28,6 +28,13 @@ public class RoutesConfig {
 								.filter(authenticationFilter.apply(new AuthenticationFilter.Config()))
                                 .addRequestHeader("From-Gateway", "true"))
                         .uri("lb://AUTHENTICATION-SERVICE"))
+
+                .route( "jwt-wallet-route", r -> r
+                .path("/api/subUser/createSubUserManually")
+                .filters(f -> f
+                        .filter(authenticationFilter.apply(new AuthenticationFilter.Config()))
+                        .addRequestHeader("From-Gateway", "true"))
+                .uri("http://localhost:8080"))
                 .build();
     }
 }

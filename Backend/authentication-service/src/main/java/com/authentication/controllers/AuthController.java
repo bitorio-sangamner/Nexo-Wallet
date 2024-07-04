@@ -3,6 +3,7 @@ package com.authentication.controllers;
 import com.authentication.dto.ApiResponse;
 import com.authentication.dto.AuthRequest;
 import com.authentication.dto.ResetPasswordRequest;
+import com.authentication.entities.AuthUser;
 import com.authentication.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Email;
@@ -73,5 +74,11 @@ public class AuthController {
     @PreAuthorize("hasAnyAuthority({'ADMIN','USER'})")
     public ResponseEntity<ApiResponse> logout(@RequestParam("email") @Email String email, HttpServletRequest servletRequest) {
         return authService.logout(email);
+    }
+
+    @GetMapping("/getUser/{email}")
+    public AuthUser getUser(@PathVariable String email)
+    {
+       return authService.getRegisteredUser(email);
     }
 }

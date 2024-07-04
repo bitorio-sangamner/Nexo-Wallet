@@ -14,14 +14,14 @@ public class UserWallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "blockchain_network")
-    private String blockchainNetwork;
-
-    @Column(name = "currency_abbr")
-    private String currencyAbbr;
-
-    @Column(name = "currency_name")
-    private String currencyName;
+//    @Column(name = "blockchain_network")
+//    private String blockchainNetwork;
+//
+//    @Column(name = "currency_abbr")
+//    private String currencyAbbr;
+//
+//    @Column(name = "currency_name")
+//    private String currencyName;
 
     @Column(name = "user_email")
     private String userEmail;

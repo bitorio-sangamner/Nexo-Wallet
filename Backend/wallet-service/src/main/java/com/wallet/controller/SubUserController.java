@@ -1,5 +1,8 @@
 package com.wallet.controller;
 
+import com.wallet.entities.AuthUser;
+import com.wallet.security.JpaUserDetailsService;
+import com.wallet.security.JwtAuthenticationFilter;
 import com.wallet.service.SubUserService;
 import com.wallet.service.UserWalletService;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.lang.reflect.Field;
 import java.util.Map;
 
 @RestController
@@ -22,6 +23,9 @@ public class SubUserController {
 
     @Autowired
     private UserWalletService userWalletService;
+
+    @Autowired
+    private JpaUserDetailsService jpaUserDetailsService;
 
     @PostMapping("/create/{userId}/{email}/{password}")
     public String createSubUserOnBybit(@PathVariable Long userId, @PathVariable String email, @PathVariable String password)
@@ -47,5 +51,15 @@ public class SubUserController {
             }
         }
         return null;
+    }
+
+    @PostMapping("/createSubUserManually")
+    public String createSubUserManually()
+    {
+        AuthUser user=jpaUserDetailsService.getUserDetails();
+        log.info("user id :"+user.getId());
+        log.info("email :"+user.getEmail());
+        log.info("password :"+user.getPassword());
+        return "Hello";
     }
 }

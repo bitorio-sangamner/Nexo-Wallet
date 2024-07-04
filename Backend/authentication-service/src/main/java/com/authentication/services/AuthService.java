@@ -11,7 +11,6 @@ import com.authentication.exceptions.InternalServerException;
 import com.authentication.exceptions.UnAuthorizedAccessException;
 import com.authentication.util.EmailUtil;
 import com.authentication.security.util.JwtUtil;
-import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
@@ -22,10 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 
-import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -316,12 +313,12 @@ public class AuthService {
 
 
 
-        String result = restClient.post()
-                .uri("http://localhost:8080/api/subUser/create/{userId}/{email}/{password}", user.getId(), user.getEmail(),user.getPassword())
-                .retrieve()
-                .body(String.class);
+//        String result = restClient.post()
+//                .uri("http://localhost:8080/api/subUser/create/{userId}/{email}/{password}", user.getId(), user.getEmail(),user.getPassword())
+//                .retrieve()
+//                .body(String.class);
 
-        System.out.println(result);
+        //System.out.println(result);
         var apiResponse = new ApiResponse("Email is verified.", "success", null);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -353,5 +350,13 @@ public class AuthService {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(apiResponse);
+    }
+
+    public AuthUser getRegisteredUser(String email)
+    {
+        AuthUser user = authUserRepository
+                .findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK.value()));
+        return user;
     }
 }

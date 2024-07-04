@@ -234,9 +234,9 @@ public class UserWalletServiceImpl implements UserWalletService {
     private void createUserWallet(String depositAddress, Long userId, String email, Currency currency) {
         UserWallet userWallet = UserWallet.builder()
                 .walletAddress(depositAddress)
-                .currencyName(currency.getCurrencyName())
-                .currencyAbbr(currency.getCurrencyAbb())
-                .blockchainNetwork(currency.getBlockchainNetwork())
+                //.currencyName(currency.getCurrencyName())
+                //.currencyAbbr(currency.getCurrencyAbb())
+                //.blockchainNetwork(currency.getBlockchainNetwork())
                 .userId(userId)
                 .userEmail(email)
                 .currency(currency)
@@ -279,9 +279,9 @@ public class UserWalletServiceImpl implements UserWalletService {
         List<UserWalletDto> userWalletDtos = new ArrayList<>();
 
         for (UserWallet userWallet : userWalletList) {
-            System.out.println("currency :"+userWallet.getCurrencyName());
-            System.out.println("currency Abb:"+userWallet.getCurrencyAbbr());
-            System.out.println("currency blockchain:"+userWallet.getBlockchainNetwork());
+            //System.out.println("currency :"+userWallet.getCurrencyName());
+            //System.out.println("currency Abb:"+userWallet.getCurrencyAbbr());
+            //System.out.println("currency blockchain:"+userWallet.getBlockchainNetwork());
 
             UserWalletDto userWalletDto = walletToDto(userWallet);
             userWalletDtos.add(userWalletDto);
