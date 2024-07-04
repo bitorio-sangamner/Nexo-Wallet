@@ -3,9 +3,13 @@ package com.wallet.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +20,8 @@ import java.util.function.Function;
 //This class contains method related to perform operations with jwt token like generateToken, validateToken etc.
 public class JwtHelper {
 
-    private String secret = "e07042972c539f933588c40f3f0c5620c335c3687b6dadd6aac1f191c1b04d0a";
-
+    @Value("${jwt.secret}")
+    private String secret;
 
 //    //requirement :
 //    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
@@ -85,26 +89,25 @@ public class JwtHelper {
 
 
     /**
-     * This method is used getting claims from a JWT.
-     *
-     * @param token JWT provided for authentication.
-     * @return Claims user details from the JWT token.
+     * Secret key for JWT authentication
      */
-//    private Claims getClaims(String token) {
-//        return Jwts.parser()
-//                .verifyWith(secretKey)
-//                .build()
-//                .parseSignedClaims(token)
-//                .getPayload();
-//    }
+    private SecretKey secretKey;
+
+    /**
+     * This method is used for initializing secret key with @PostConstruct annotation
+     */
+    @PostConstruct
+    public void initKey() {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     //for retrieveing any information from token we will need the secret key
-    private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secret)
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
 
@@ -118,7 +121,7 @@ public class JwtHelper {
      * @return the desired claim based on the function provided.
      */
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
+        final Claims claims = getClaims(token);
         return claimsResolver.apply(claims);
     }
 

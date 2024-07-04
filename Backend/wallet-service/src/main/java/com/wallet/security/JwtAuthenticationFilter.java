@@ -6,6 +6,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@Slf4j
+@AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private Logger logger = LoggerFactory.getLogger(OncePerRequestFilter.class);
     @Autowired
     private JwtHelper jwtHelper;
 
-
-   @Autowired
-   private JpaUserDetailsService jpaUserDetailsService;
+    @Autowired
+    private JpaUserDetailsService jpaUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
@@ -36,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Authorization = Bearer wghosafhsohg
         String requestHeader = request.getHeader("Authorization");
 
-        logger.info(" Header Hello :  {}", requestHeader);
+        log.info(" Header Hello :  {}", requestHeader);
 
         String username = null;
         String token = null;
@@ -47,38 +49,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println("given token : "+token);
             try {
 
-                username = this.jwtHelper.claimsExtractEmail(token);
+                username = jwtHelper.claimsExtractEmail(token);
                 System.out.println("Usename :"+username);
 
             } catch (IllegalArgumentException e) {
-                logger.info("Illegal Argument while fetching the username !!");
+                log.info("Illegal Argument while fetching the username !!");
                 e.printStackTrace();
             } catch (ExpiredJwtException e) {
-                logger.info("Given jwt token is expired !!");
+                log.info("Given jwt token is expired !!");
                 e.printStackTrace();
             } catch (MalformedJwtException e) {
-                logger.info("Some changed has done in token !! Invalid Token");
+                log.info("Some changed has done in token !! Invalid Token");
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
-
             }
-
-
         } else {
-            logger.info("Invalid Header Value !! ");
+            log.info("Invalid Header Value !! ");
         }
-
 
         //
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             System.out.println("Inside if");
             //fetch user detail from username
-            UserDetails userDetails = this.jpaUserDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = jpaUserDetailsService.loadUserByUsername(username);
             System.out.println("If Hello");
 
-            Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
+            Boolean validateToken = jwtHelper.validateToken(token, userDetails);
             System.out.println("if Hii");
             System.out.println(validateToken);
             if (validateToken) {
@@ -91,11 +89,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 System.out.println("Last");
-
-
-
             } else {
-                logger.info("Validation fails !!");
+                log.info("Validation fails !!");
             }
         }
 

@@ -30,7 +30,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-
         String gatewayHeader = request.getHeader("From-Gateway");
         if (gatewayHeader == null || !gatewayHeader.equals("true")) {
             System.out.println(gatewayHeader + " - " + request.getHeaderNames());

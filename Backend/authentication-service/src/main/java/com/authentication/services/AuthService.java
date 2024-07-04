@@ -354,9 +354,8 @@ public class AuthService {
 
     public AuthUser getRegisteredUser(String email)
     {
-        AuthUser user = authUserRepository
+        return authUserRepository
                 .findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new EmailNotRegisteredException("Email is not registered.", HttpStatus.OK.value()));
-        return user;
     }
 }
