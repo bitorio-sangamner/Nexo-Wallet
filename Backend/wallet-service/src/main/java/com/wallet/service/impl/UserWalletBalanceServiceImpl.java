@@ -63,70 +63,69 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
 
 
     /**
-     * Creates a user wallet balance entry for the specified user and currency.
+     * Creates a user wallet balance entry for a new user.
      *
-     * @param userId   The ID of the user.
-     * @param email    The email of the user.
-     * @param currency The currency object.
+     * @return The created UserWalletBalance object.
      */
     @Override
-    public void createUserWalletBalance(Long userId, String email, Currency currency) {
+    public UserWalletBalance createUserWalletBalance() {
+        log.info("Creating user wallet balance");
+
         try {
-            log.info("Creating wallet balance for userId: {}, currency: {}", userId, currency.getCurrencyName());
-
-            // Log currency details
-            log.debug("Currency Name: {}", currency.getCurrencyName());
-            log.debug("Currency Abbreviation: {}", currency.getCurrencyAbb());
-
-            // Create a new UserWalletBalance object with initial zero balances
+            // Initialize a new UserWalletBalance object with zero balances
             UserWalletBalance userWalletBalance = UserWalletBalance.builder()
-                    .userId(userId)
-                    .email(email)
-                    .currencyName(currency.getCurrencyName())
-                    .currencyAbb(currency.getCurrencyAbb())
                     .fundingWallet(BigDecimal.ZERO)
                     .tradingWallet(BigDecimal.ZERO)
                     .build();
 
             // Save the UserWalletBalance object to the repository
-            userWalletBalanceRepository.save(userWalletBalance);
+            userWalletBalance = userWalletBalanceRepository.save(userWalletBalance);
 
-            log.info("User wallet balance created successfully for userId: {}", userId);
+            log.info("User wallet balance created successfully with ID: {}", userWalletBalance.getId());
+            return userWalletBalance;
         } catch (Exception e) {
-            // Log the exception with an appropriate message
-            log.error("Failed to create user wallet balance for userId: {}. Exception: {}", userId, e.getMessage(), e);
+            log.error("Failed to create user wallet balance: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to create user wallet balance.", e);
         }
     }
-
-
     @Override
     public UserWalletBalanceDto getUserCurrencyByUserEmailAndCurrencyName(String email, String currencyName) {
-        UserWalletBalance userWalletBalance = this.userWalletBalanceRepository.findByEmailAndCurrencyName(email, currencyName);
-        log.info("inside getUserCurrencyByUserEmailAndCurrencyName");
-        if (userWalletBalance != null) {
-            return this.userWalletBalanceToDto(userWalletBalance);
-        } else {
-            throw new ResourceNotFoundException("User wallet balance not found for email: " + email + " and currency: " + currencyName,false);
-        }
+        return null;
     }
 
     @Override
     public List<UserWalletBalanceDto> getWalletBalance(String email) {
-        List<UserWalletBalance> userWalletBalanceList=this.userWalletBalanceRepository.findByEmail(email);
-        if (userWalletBalanceList.isEmpty()) {
-            log.info("No wallet balances found for email: {}", email);
-            var apiResponse = new ApiResponse("No wallet balances found for email: {}" + email, "error",null);
-
-            throw new ResourceNotFoundException("User wallet not found for user: " + email,false);
-        }
-        List<UserWalletBalanceDto> userWalletBalanceDtoList = new ArrayList<>();
-        for (UserWalletBalance walletBalance : userWalletBalanceList) {
-            UserWalletBalanceDto walletBalanceDto = userWalletBalanceToDto(walletBalance);
-            userWalletBalanceDtoList.add(walletBalanceDto);
-        }
-        return userWalletBalanceDtoList;
+        return null;
     }
+
+
+//    @Override
+//    public UserWalletBalanceDto getUserCurrencyByUserEmailAndCurrencyName(String email, String currencyName) {
+//        UserWalletBalance userWalletBalance = this.userWalletBalanceRepository.findByEmailAndCurrencyName(email, currencyName);
+//        log.info("inside getUserCurrencyByUserEmailAndCurrencyName");
+//        if (userWalletBalance != null) {
+//            return this.userWalletBalanceToDto(userWalletBalance);
+//        } else {
+//            throw new ResourceNotFoundException("User wallet balance not found for email: " + email + " and currency: " + currencyName,false);
+//        }
+//    }
+//
+//    @Override
+//    public List<UserWalletBalanceDto> getWalletBalance(String email) {
+//        List<UserWalletBalance> userWalletBalanceList=this.userWalletBalanceRepository.findByEmail(email);
+//        if (userWalletBalanceList.isEmpty()) {
+//            log.info("No wallet balances found for email: {}", email);
+//            var apiResponse = new ApiResponse("No wallet balances found for email: {}" + email, "error",null);
+//
+//            throw new ResourceNotFoundException("User wallet not found for user: " + email,false);
+//        }
+//        List<UserWalletBalanceDto> userWalletBalanceDtoList = new ArrayList<>();
+//        for (UserWalletBalance walletBalance : userWalletBalanceList) {
+//            UserWalletBalanceDto walletBalanceDto = userWalletBalanceToDto(walletBalance);
+//            userWalletBalanceDtoList.add(walletBalanceDto);
+//        }
+//        return userWalletBalanceDtoList;
+//    }
 
     /**
      * Converts a UserWalletBalance entity to a UserWalletBalanceDto.

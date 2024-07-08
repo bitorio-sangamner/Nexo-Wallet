@@ -19,24 +19,24 @@ public class UserWalletBalanceController {
     @Autowired
     private UserWalletBalanceService userWalletBalanceService;
 
-    @GetMapping("/getUserCurrency")
-    public ResponseEntity<UserWalletBalanceDto> getUserCurrencyByUserEmailAndCurrencyName(
-            @RequestParam("userEmail") String userEmail,
-            @RequestParam("currencyName") String currencyName) {
-            UserWalletBalanceDto userCurrency = userWalletBalanceService.getUserCurrencyByUserEmailAndCurrencyName(userEmail, currencyName);
-            return ResponseEntity.ok(userCurrency);
-    }
-
-    @GetMapping("/getUserWalletBalance/{userName}")
-    public ResponseEntity<Object> getUserWalletBalance(@PathVariable String userName)
-    {
-        List<UserWalletBalanceDto> userWalletBalanceDtoList=this.userWalletBalanceService.getWalletBalance(userName);
-        var apiResponse = new ApiResponse(
-                "User wallet data",
-                "success",userWalletBalanceDtoList);
-        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
-
-    }
+//    @GetMapping("/getUserCurrency")
+//    public ResponseEntity<UserWalletBalanceDto> getUserCurrencyByUserEmailAndCurrencyName(
+//            @RequestParam("userEmail") String userEmail,
+//            @RequestParam("currencyName") String currencyName) {
+//            UserWalletBalanceDto userCurrency = userWalletBalanceService.getUserCurrencyByUserEmailAndCurrencyName(userEmail, currencyName);
+//            return ResponseEntity.ok(userCurrency);
+//    }
+//
+//    @GetMapping("/getUserWalletBalance/{userName}")
+//    public ResponseEntity<Object> getUserWalletBalance(@PathVariable String userName)
+//    {
+//        List<UserWalletBalanceDto> userWalletBalanceDtoList=this.userWalletBalanceService.getWalletBalance(userName);
+//        var apiResponse = new ApiResponse(
+//                "User wallet data",
+//                "success",userWalletBalanceDtoList);
+//        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+//
+//    }
 
 
 }

@@ -20,7 +20,7 @@ public class JpaUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        authUser= restClient.post()
+        authUser= restClient.get()
                 .uri("http://localhost:9090/getUser/{email}",username)
                 .header("From-Gateway", "true")
                 .retrieve()

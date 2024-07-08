@@ -8,6 +8,6 @@ import java.util.List;
 public interface UserWalletBalanceRepository extends JpaRepository<UserWalletBalance,Long> {
 
     //custom method
-     UserWalletBalance findByEmailAndCurrencyName(String email,String currencyName);
-     List<UserWalletBalance> findByEmail(String email);
+//     UserWalletBalance findByEmailAndCurrencyName(String email,String currencyName);
+//     List<UserWalletBalance> findByEmail(String email);
 }

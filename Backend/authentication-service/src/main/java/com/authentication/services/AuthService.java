@@ -313,12 +313,13 @@ public class AuthService {
 
 
 
-//        String result = restClient.post()
-//                .uri("http://localhost:8080/api/subUser/create/{userId}/{email}/{password}", user.getId(), user.getEmail(),user.getPassword())
-//                .retrieve()
-//                .body(String.class);
+        String result = restClient.post()
+                .uri("http://localhost:8080/api/subUser/create/{userId}/{email}", user.getId(), user.getEmail())
+                .retrieve()
+                .body(String.class);
 
-        //System.out.println(result);
+        System.out.println(result);
+
         var apiResponse = new ApiResponse("Email is verified.", "success", null);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }

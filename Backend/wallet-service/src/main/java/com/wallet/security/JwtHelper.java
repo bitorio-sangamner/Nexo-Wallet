@@ -20,14 +20,13 @@ import java.util.function.Function;
 //This class contains method related to perform operations with jwt token like generateToken, validateToken etc.
 public class JwtHelper {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private String secret="e07042972c539f933588c40f3f0c5620c335c3687b6dadd6aac1f191c1b04d0a";
 
 //    //requirement :
 //    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 //
 //    //    public static final long JWT_TOKEN_VALIDITY =  60;
-//    private String secret = "e07042972c539f933588c40f3f0c5620c335c3687b6dadd6aac1f191c1b04d0a";
+//    private String secret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
 //
 //    //retrieve username from jwt token
 //    public String getUsernameFromToken(String token) {
@@ -49,10 +48,6 @@ public class JwtHelper {
 //        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 //    }
 //
-////    private Claims getClaims(String token) {
-////        return Jwts.parser().
-////        setSigningKey(secret).parseClaimsJws(token).getBody();
-////    }
 //    //check if the token has expired
 //    private Boolean isTokenExpired(String token) {
 //        final Date expiration = getExpirationDateFromToken(token);
@@ -65,7 +60,7 @@ public class JwtHelper {
 //        return doGenerateToken(claims, userDetails.getUsername());
 //    }
 //
-//    //while creating the token
+//    //while creating the token -
 //    //1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
 //    //2. Sign the JWT using the HS512 algorithm and secret key.
 //    //3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
@@ -85,7 +80,8 @@ public class JwtHelper {
 
 
 
- //*****************************************************************************************************
+
+    //*****************************************************************************************************
 
 
     /**

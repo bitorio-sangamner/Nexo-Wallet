@@ -1,17 +1,17 @@
 package com.wallet.controller;
 
-import com.wallet.entities.AuthUser;
 import com.wallet.security.JpaUserDetailsService;
-import com.wallet.security.JwtAuthenticationFilter;
 import com.wallet.service.SubUserService;
 import com.wallet.service.UserWalletService;
+import com.wallet.util.RandomStringGenerator;
+import com.wallet.util.SubUserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/subUser")
@@ -27,39 +27,52 @@ public class SubUserController {
     @Autowired
     private JpaUserDetailsService jpaUserDetailsService;
 
-    @PostMapping("/create/{userId}/{email}/{password}")
-    public String createSubUserOnBybit(@PathVariable Long userId, @PathVariable String email, @PathVariable String password)
-    {
+    @PostMapping("/create/{userId}/{email}")
+    public String createSubUserOnBybit(@PathVariable Long userId, @PathVariable String email) {
         log.info("inside createSubUserOnBybit create...........");
+        String password = RandomStringGenerator.generateRandomString(8, 30);
+        SubUserResponse subUserResponse = subUserService.createSubUserOnBybit(email, password);
 
-        Map<String, Object> subUserOnBybit=subUserService.createSubUserOnBybit(email,password);
+        if (subUserResponse != null && subUserResponse.getResult() != null) {
+            SubUserResponse.Result result = subUserResponse.getResult();
 
-        // Print all entries in the map (optional, for debugging purposes)
-        for (Map.Entry<String, Object> entry : subUserOnBybit.entrySet()) {
-            System.out.println(entry.getKey() + " - " + entry.getValue());
-        }
-
-        if(subUserOnBybit!=null) {
-            if (subUserOnBybit.containsKey("result")) {
-
-                Map<String, Object> result = (Map<String, Object>) subUserOnBybit.get("result");
-
-                if (result != null && result.containsKey("uid")) {
-                    String subUserId = result.get("uid").toString();
-                    return this.userWalletService.createWallet(userId, email, subUserId);
-                }
+            if (result != null && result.getUid() != null) {
+                String subUserId = result.getUid();
+                return this.userWalletService.createWallet(userId, email, subUserId);
             }
         }
-        return null;
+        return "Sub-user creation failed";
     }
 
-    @PostMapping("/createSubUserManually")
-    public String createSubUserManually()
-    {
-        AuthUser user=jpaUserDetailsService.getUserDetails();
-        log.info("user id :"+user.getId());
-        log.info("email :"+user.getEmail());
-        log.info("password :"+user.getPassword());
-        return "Hello";
-    }
+//    @PostMapping("/createSubUserManually")
+//    public String createSubUserManually()
+//    {
+//        AuthUser user=jpaUserDetailsService.getUserDetails();
+//        log.info("user id :"+user.getId());
+//        log.info("email :"+user.getEmail());
+//        log.info("password :"+user.getPassword());
+//
+//        String password=RandomStringGenerator.generateRandomString(8, 30);
+//        log.info("password :"+password);
+//
+//        Map<String, Object> subUserOnBybit=subUserService.createSubUserOnBybit(user.getEmail(),password);
+//
+//        // Print all entries in the map (optional, for debugging purposes)
+//        for (Map.Entry<String, Object> entry : subUserOnBybit.entrySet()) {
+//            System.out.println(entry.getKey() + " - " + entry.getValue());
+//        }
+//
+//        if(subUserOnBybit!=null) {
+//            if (subUserOnBybit.containsKey("result")) {
+//
+//                Map<String, Object> result = (Map<String, Object>) subUserOnBybit.get("result");
+//
+//                if (result != null && result.containsKey("uid")) {
+//                    String subUserId = result.get("uid").toString();
+//                    return this.userWalletService.createWallet((long) user.getId(), user.getEmail(), subUserId);
+//                }
+//            }
+//        }
+//        return "Hello";
+//    }
 }
