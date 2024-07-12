@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -37,10 +38,11 @@ public class UserWalletController {
                 .body(new ApiResponse("An unexpected error occurred", "error",null));
     }
 
-    @GetMapping("/getWallet/{userName}")
-    public ResponseEntity<Object> getUserWallet(@PathVariable String userName) {
-
-          List<UserWalletDto> userWalletDtoList=this.userWalletService.getWallet(userName);
+    @GetMapping("/getWallet")
+    public ResponseEntity<Object> getUserWallet() {
+        // Get the email from SecurityContextHolder
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+          List<UserWalletDto> userWalletDtoList=this.userWalletService.getWallet(email);
           return ResponseEntity.ok(userWalletDtoList);
 
     }

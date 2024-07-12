@@ -30,6 +30,8 @@ public class SecurityConfig {
                  .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/subUser/createSubUserManually").authenticated()
                          .requestMatchers("/api/wallet/getWallet/{userName}").authenticated()
+                         .requestMatchers("/api/wallet/getWallet").authenticated()
+                         .requestMatchers("/api/subUser/createSubUserApiKeyOnBybit").permitAll()
                         .requestMatchers("api/subUser/create/{userId}/{email}").permitAll()
                          .requestMatchers("/api/wallet/create/{userId}/{email}/{subMemberId}").permitAll()
                         .anyRequest().authenticated())

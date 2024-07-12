@@ -15,12 +15,10 @@ public class JpaUserDetailsService implements UserDetailsService {
     @Autowired
     private RestClient restClient;
 
-    @Autowired
-    AuthUser authUser;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        authUser= restClient.get()
+        AuthUser authUser= restClient.get()
                 .uri("http://localhost:9090/getUser/{email}",username)
                 .header("From-Gateway", "true")
                 .retrieve()
@@ -34,8 +32,11 @@ public class JpaUserDetailsService implements UserDetailsService {
 
     }
 
-    public AuthUser getUserDetails()
-    {
-        return authUser;
+    public AuthUser getUserDetails(String email) {
+        return restClient.get()
+                .uri("http://localhost:9090/getUser/{email}", email)
+                .header("From-Gateway", "true")
+                .retrieve()
+                .body(AuthUser.class);
     }
 }
