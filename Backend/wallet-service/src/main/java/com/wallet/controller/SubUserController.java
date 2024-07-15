@@ -77,9 +77,10 @@ public class SubUserController {
         // Get the email from SecurityContextHolder
         //String email = SecurityContextHolder.getContext().getAuthentication().getName();
         //log the received data
+        log.info("subuid :"+subUserApiKeyRequest.getSubuid());
         log.info("Note: {}", subUserApiKeyRequest.getNote());
         log.info("ReadOnly: {}", subUserApiKeyRequest.getReadOnly());
-        log.info("Permissions: {}", subUserApiKeyRequest.getPermissions());
+        log.info("Permissions: {}", subUserApiKeyRequest.getPermissions().wallet);
 
         //SubUserDto subUserDto=subUserService.getSubUserByUserName(email);
         //subUserApiKeyRequest.setSubuid(Integer.parseInt((subUserDto.getUserId())));

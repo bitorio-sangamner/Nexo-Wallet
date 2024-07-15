@@ -37,7 +37,7 @@ public class SubUserApiKeyResponse {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public class Permissions{
+    public static class Permissions{
         @JsonProperty("ContractTrade")
         public ArrayList<Object> contractTrade;
         @JsonProperty("Spot")
@@ -54,6 +54,10 @@ public class SubUserApiKeyResponse {
         public ArrayList<Object> exchange;
         @JsonProperty("NFT")
         public ArrayList<Object> nFT;
+        @JsonProperty("Derivatives")
+        public ArrayList<Object> derivatives;
+        @JsonProperty("Affiliate")
+        public ArrayList<Object> affiliate;
     }
 
 }

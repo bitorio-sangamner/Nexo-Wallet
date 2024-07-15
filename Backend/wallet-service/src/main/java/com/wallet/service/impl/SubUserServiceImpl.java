@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,8 @@ public class SubUserServiceImpl implements SubUserService {
     @Override
     public String createSubUserApiKey(SubUserApiKeyRequest subUserApiKeyRequest) throws Exception {
 
+        log.info("inside createSubUserApiKey");
+        log.info("subId :"+subUserApiKeyRequest.getSubuid()+" Note :"+subUserApiKeyRequest.getNote()+" Read only :"+subUserApiKeyRequest.getReadOnly());
         try {
             UserDataRequest subUserRequest = UserDataRequest.builder()
                     .subuid(subUserApiKeyRequest.getSubuid())
@@ -149,14 +152,14 @@ public class SubUserServiceImpl implements SubUserService {
                     .secret(subUserApiKeyResult.getSecret())
                     .readOnly(subUserApiKeyResult.getReadOnly())
                     .note(subUserApiKeyResult.getNote())
-                    .walletPermissions(subUserApiKeyResult.getPermissions().getWallet())
-                    .spotPermissions(subUserApiKeyResult.getPermissions().getSpot())
-                    .contractTradePermissions(subUserApiKeyResult.getPermissions().getContractTrade())
-                    .optionsPermissions(subUserApiKeyResult.getPermissions().getOptions())
-                    .copyTradingPermissions(subUserApiKeyResult.getPermissions().getCopyTrading())
-                    .blockTradePermissions(subUserApiKeyResult.getPermissions().getBlockTrade())
-                    .exchangePermissions(subUserApiKeyResult.getPermissions().getExchange())
-                    .nFTPermissions(subUserApiKeyResult.getPermissions().getNFT())
+                    .walletPermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getWallet()))))
+                    .spotPermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getSpot()))))
+                    .contractTradePermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getContractTrade()))))
+                    .optionsPermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getOptions()))))
+                    .copyTradingPermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getCopyTrading()))))
+                    .blockTradePermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getBlockTrade()))))
+                    .exchangePermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getExchange()))))
+                    .nftPermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getNFT()))))
                     .build());
             return "SubUser ApiKey saved successfully!!";
         }
@@ -181,22 +184,22 @@ public class SubUserServiceImpl implements SubUserService {
         Map<String, List<String>> permissionMap = new HashMap<>();
 
         if (permissions.getWallet() != null) {
-            permissionMap.put("wallet", permissions.getWallet());
+            permissionMap.put("Wallet", permissions.getWallet());
         }
         if (permissions.getSpot() != null) {
-            permissionMap.put("spot", permissions.getSpot());
+            permissionMap.put("Spot", permissions.getSpot());
         }
         if (permissions.getContractTrade() != null) {
-            permissionMap.put("contractTrade", permissions.getContractTrade());
+            permissionMap.put("ContractTrade", permissions.getContractTrade());
         }
         if (permissions.getOptions() != null) {
-            permissionMap.put("options", permissions.getOptions());
+            permissionMap.put("Options", permissions.getOptions());
         }
         if (permissions.getExchange() != null) {
-            permissionMap.put("exchange", permissions.getExchange());
+            permissionMap.put("Exchange", permissions.getExchange());
         }
         if (permissions.getCopyTrading() != null) {
-            permissionMap.put("copyTrading", permissions.getCopyTrading());
+            permissionMap.put("CopyTrading", permissions.getCopyTrading());
         }
 
         return UserPermissionsMap.builder()
