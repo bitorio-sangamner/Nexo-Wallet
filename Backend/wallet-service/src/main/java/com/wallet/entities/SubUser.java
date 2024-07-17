@@ -1,9 +1,6 @@
 package com.wallet.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +22,11 @@ public class SubUser {
     private int memberType;
     private int status;
     private String remark;
+
+    @OneToOne
+    @JoinColumn(name = "sub_user_api_key_id", referencedColumnName = "id")
+    private SubUserApiKey subUserApiKey;
+
 
     public SubUser(String userId,String username,int memberType,int status,String remark,String email)
     {

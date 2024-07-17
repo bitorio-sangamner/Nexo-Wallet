@@ -99,7 +99,7 @@ public class SubUserServiceImpl implements SubUserService {
     }
 
     @Override
-    public String createSubUserApiKey(SubUserApiKeyRequest subUserApiKeyRequest) throws Exception {
+    public String createSubUserApiKey(SubUserApiKeyRequest subUserApiKeyRequest,String email) throws Exception {
 
         log.info("inside createSubUserApiKey");
         log.info("subId :"+subUserApiKeyRequest.getSubuid()+" Note :"+subUserApiKeyRequest.getNote()+" Read only :"+subUserApiKeyRequest.getReadOnly());
@@ -123,7 +123,7 @@ public class SubUserServiceImpl implements SubUserService {
             if (subUserApiKeyResponse != null && subUserApiKeyResponse.getResult() != null) {
                 SubUserApiKeyResponse.Result subUserApiKeyResult = subUserApiKeyResponse.getResult();
                 if (subUserApiKeyResult != null && subUserApiKeyResult.getId() != null && subUserApiKeyResult.getApiKey() != null && subUserApiKeyResult.getSecret() != null) {
-                    String message = saveDetailsOfSubUserApiKey(subUserApiKeyResult);
+                    String message = saveDetailsOfSubUserApiKey(subUserApiKeyResult,email);
                     if ("SubUser ApiKey saved successfully!!".equals(message)) {
                         return "SubUser ApiKey created and saved successfully!!";
                     } else {
@@ -144,10 +144,10 @@ public class SubUserServiceImpl implements SubUserService {
 
     }
 
-    public String saveDetailsOfSubUserApiKey(SubUserApiKeyResponse.Result subUserApiKeyResult)
+    public String saveDetailsOfSubUserApiKey(SubUserApiKeyResponse.Result subUserApiKeyResult,String email)
     {
         try {
-            subUserApiKeyRepository.save(SubUserApiKey.builder().id(Integer.parseInt(subUserApiKeyResult.getId()))
+            SubUserApiKey subUserApiKey = SubUserApiKey.builder().id(Integer.parseInt(subUserApiKeyResult.getId()))
                     .apiKey(subUserApiKeyResult.getApiKey())
                     .secret(subUserApiKeyResult.getSecret())
                     .readOnly(subUserApiKeyResult.getReadOnly())
@@ -160,8 +160,24 @@ public class SubUserServiceImpl implements SubUserService {
                     .blockTradePermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getBlockTrade()))))
                     .exchangePermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getExchange()))))
                     .nftPermissions(Collections.singletonList((String.valueOf(subUserApiKeyResult.getPermissions().getNFT()))))
-                    .build());
-            return "SubUser ApiKey saved successfully!!";
+                    .build();
+
+            // Save SubUserApiKey to the database
+            subUserApiKeyRepository.save(subUserApiKey);
+
+            // Retrieve SubUser by email
+            SubUser subUser=subUserRepository.findByEmail(email);
+            // Set SubUserApiKey reference in SubUser
+            if (subUser != null) {
+                subUser.setSubUserApiKey(subUserApiKey);
+
+                // Save the updated SubUser back to the database
+                subUserRepository.save(subUser);
+
+                return "SubUser ApiKey saved successfully!!";
+            } else {
+                return "SubUser not found.";
+            }
         }
         catch (Exception e) {
             log.error("Error saving sub-user ApiKey: {}", e.getMessage(), e);

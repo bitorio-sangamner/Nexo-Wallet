@@ -14,5 +14,5 @@ public interface SubUserService {
 
     public SubUserResponse createSubUserOnBybit(String userName, String email,String password);
     public SubUserDto getSubUserByEmail(String email);
-    public String createSubUserApiKey(SubUserApiKeyRequest subUserApiKeyRequest) throws Exception;
+    public String createSubUserApiKey(SubUserApiKeyRequest subUserApiKeyRequest,String email) throws Exception;
 }

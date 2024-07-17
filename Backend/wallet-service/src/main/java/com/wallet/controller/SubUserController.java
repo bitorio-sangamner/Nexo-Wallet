@@ -87,7 +87,7 @@ public class SubUserController {
 
         SubUserDto subUserDto=subUserService.getSubUserByEmail(email);
         subUserApiKeyRequest.setSubuid(Integer.parseInt((subUserDto.getUserId())));
-        String msg=subUserService.createSubUserApiKey(subUserApiKeyRequest);
+        String msg=subUserService.createSubUserApiKey(subUserApiKeyRequest,email);
 
         return msg;
     }
