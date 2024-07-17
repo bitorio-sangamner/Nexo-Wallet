@@ -13,7 +13,7 @@ public class RandomStringGenerator {
     // Use SecureRandom for better randomness
     private static final Random RANDOM = new SecureRandom();
 
-    public static String generateRandomString(int minLength, int maxLength) {
+    public static String generateRandomPassword(int minLength, int maxLength) {
         if (minLength < 8 || maxLength > 30 || minLength > maxLength) {
             throw new IllegalArgumentException("Length must be between 8 and 30 characters.");
         }
@@ -57,4 +57,34 @@ public class RandomStringGenerator {
         }
         return sb.toString();
     }
+
+    public static String generateRandomUserName(int minLength, int maxLength) {
+        if (minLength < 6 || maxLength > 16 || minLength > maxLength) {
+            throw new IllegalArgumentException("Length must be between 6 and 16 characters.");
+        }
+
+        int length = RANDOM.nextInt((maxLength - minLength) + 1) + minLength;
+        boolean hasLetter;
+        boolean hasDigit;
+        StringBuilder sb;
+
+        do {
+            sb = new StringBuilder(length);
+            hasLetter = false;
+            hasDigit = false;
+
+            for (int i = 0; i < length; i++) {
+                char randomChar = CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length()));
+                sb.append(randomChar);
+                if (Character.isLetter(randomChar)) {
+                    hasLetter = true;
+                } else if (Character.isDigit(randomChar)) {
+                    hasDigit = true;
+                }
+            }
+        } while (!hasLetter || !hasDigit);
+
+        return sb.toString();
+    }
+
 }

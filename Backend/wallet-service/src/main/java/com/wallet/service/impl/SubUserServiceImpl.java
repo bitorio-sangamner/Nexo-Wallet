@@ -47,7 +47,7 @@ public class SubUserServiceImpl implements SubUserService {
     private SubUserApiKeyRepository subUserApiKeyRepository;
 
     @Override
-    public SubUserResponse createSubUserOnBybit(String userName, String password) {
+    public SubUserResponse createSubUserOnBybit(String userName, String email,String password) {
         UserDataRequest subUserRequest = UserDataRequest.builder()
                 .username(userName)
                 .password(password)
@@ -71,7 +71,7 @@ public class SubUserServiceImpl implements SubUserService {
             if (subUserResponse != null && subUserResponse.getResult() != null) {
                 SubUserResponse.Result result = subUserResponse.getResult();
                 if (result != null && result.getUid() != null && result.getUsername() != null && result.getMemberType() != 0 && result.getStatus() != 0 && result.getRemark() != null) {
-                    String message = this.saveDetailsOfSubAccount(result);
+                    String message = this.saveDetailsOfSubAccount(result,email);
                     log.info("Message: {}", message);
                     if ("SubUser created and saved successfully!!".equals(message)) {
                         return subUserResponse;
@@ -92,9 +92,9 @@ public class SubUserServiceImpl implements SubUserService {
     }
 
     @Override
-    public SubUserDto getSubUserByUserName(String userName) {
+    public SubUserDto getSubUserByEmail(String email) {
 
-        SubUser subUser=subUserRepository.findByUsername(userName);
+        SubUser subUser=subUserRepository.findByEmail(email);
         return this.subUserToDto(subUser);
     }
 
@@ -214,7 +214,7 @@ public class SubUserServiceImpl implements SubUserService {
      * @param result The SubUserResponse.Result object containing the sub-account details.
      * @return A message indicating the result of the save operation.
      */
-    public String saveDetailsOfSubAccount(SubUserResponse.Result result) {
+    public String saveDetailsOfSubAccount(SubUserResponse.Result result,String userEmail) {
         if (result == null) {
             return "Result map is null.";
         }
@@ -226,9 +226,10 @@ public class SubUserServiceImpl implements SubUserService {
             int memberType = result.getMemberType();
             int status = result.getStatus();
             String remark = result.getRemark();
+            String email=userEmail;
 
             // Create a new SubUser entity
-            SubUser subUserToSave = new SubUser(userId, userName, memberType, status, remark);
+            SubUser subUserToSave = new SubUser(userId, userName, memberType, status, remark,email);
 
             // Save the SubUser entity to the repository
             subUserRepository.save(subUserToSave);

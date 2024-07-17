@@ -12,7 +12,7 @@ import java.util.Map;
 @Component
 public interface SubUserService {
 
-    public SubUserResponse createSubUserOnBybit(String userName, String password);
-    public SubUserDto getSubUserByUserName(String userName);
+    public SubUserResponse createSubUserOnBybit(String userName, String email,String password);
+    public SubUserDto getSubUserByEmail(String email);
     public String createSubUserApiKey(SubUserApiKeyRequest subUserApiKeyRequest) throws Exception;
 }
