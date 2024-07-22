@@ -3,6 +3,7 @@ package com.wallet.controller;
 
 import com.wallet.payloads.ApiResponse;
 import com.wallet.payloads.UserWalletDto;
+import com.wallet.payloads.UserWalletResponseDto;
 import com.wallet.service.UserWalletBalanceService;
 import com.wallet.service.UserWalletService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/wallet")
@@ -42,8 +44,18 @@ public class UserWalletController {
     public ResponseEntity<Object> getUserWallet() {
         // Get the email from SecurityContextHolder
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-          List<UserWalletDto> userWalletDtoList=this.userWalletService.getWallet(email);
-          return ResponseEntity.ok(userWalletDtoList);
+        Map<String, List<UserWalletResponseDto>>userWalletResponseDtoMap=this.userWalletService.getWallet("vaishnavishinde93076@gmail.com");
+          return ResponseEntity.ok(userWalletResponseDtoMap);
 
     }
+
+    @GetMapping("/getWallet/{currencyAbb}")
+    public ResponseEntity<Object>getWallet(@PathVariable String currencyAbb)
+    {
+        // Get the email from SecurityContextHolder
+        //String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Map<String,UserWalletResponseDto> userWalletResponseDtoMap=userWalletService.getWallet("vaishnavishinde93076@gmail.com",currencyAbb);
+        return ResponseEntity.ok(userWalletResponseDtoMap);
+    }
+
 }

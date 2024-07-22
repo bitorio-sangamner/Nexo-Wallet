@@ -68,21 +68,29 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
      * @return The created UserWalletBalance object.
      */
     @Override
-    public UserWalletBalance createUserWalletBalance() {
+    public String  createUserWalletBalance(Long userId,String email,Currency currency) {
         log.info("Creating user wallet balance");
 
         try {
-            // Initialize a new UserWalletBalance object with zero balances
-            UserWalletBalance userWalletBalance = UserWalletBalance.builder()
-                    .fundingWallet(BigDecimal.ZERO)
-                    .tradingWallet(BigDecimal.ZERO)
-                    .build();
+            UserWalletBalance userWalletBalance=userWalletBalanceRepository.findByEmailAndCurrencyAbb(email,currency.getCurrencyAbb());
+            if(userWalletBalance==null) {
+                // Initialize a new UserWalletBalance object with zero balances
+                 userWalletBalance = UserWalletBalance.builder()
+                        .userId(userId)
+                        .email(email)
+                        .currencyAbb(currency.getCurrencyAbb())
+                        .currencyName(currency.getCurrencyName())
+                        .fundingWallet(BigDecimal.ZERO)
+                        .tradingWallet(BigDecimal.ZERO)
+                        .build();
 
-            // Save the UserWalletBalance object to the repository
-            userWalletBalance = userWalletBalanceRepository.save(userWalletBalance);
+                // Save the UserWalletBalance object to the repository
+                userWalletBalance = userWalletBalanceRepository.save(userWalletBalance);
 
-            log.info("User wallet balance created successfully with ID: {}", userWalletBalance.getId());
-            return userWalletBalance;
+                log.info("User wallet balance created successfully with ID: {}", userWalletBalance.getId());
+                return "User wallet balance created successfully";
+            }
+            return "balance exist";
         } catch (Exception e) {
             log.error("Failed to create user wallet balance: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to create user wallet balance.", e);
@@ -94,8 +102,9 @@ public class UserWalletBalanceServiceImpl implements UserWalletBalanceService {
     }
 
     @Override
-    public List<UserWalletBalanceDto> getWalletBalance(String email) {
-        return null;
+    public UserWalletBalance getWalletBalance(String email,String currencyAbb) {
+        UserWalletBalance userWalletBalance=userWalletBalanceRepository.findByEmailAndCurrencyAbb(email,currencyAbb);
+        return userWalletBalance;
     }
 
 

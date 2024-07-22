@@ -10,4 +10,6 @@ public interface UserWalletBalanceRepository extends JpaRepository<UserWalletBal
     //custom method
 //     UserWalletBalance findByEmailAndCurrencyName(String email,String currencyName);
 //     List<UserWalletBalance> findByEmail(String email);
+
+    UserWalletBalance findByEmailAndCurrencyAbb(String email,String currencyAbb);
 }

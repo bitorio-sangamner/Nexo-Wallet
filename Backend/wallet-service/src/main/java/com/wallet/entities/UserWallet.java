@@ -23,11 +23,12 @@ public class UserWallet {
     @Column(name = "wallet_address")
     private String walletAddress;
 
+
     @ManyToOne
     @JoinColumn(name = "currency_id")
     private Currency currency;
 
-    @OneToOne
-    @JoinColumn(name = "user_wallet_balance_id", referencedColumnName = "id")
-    private UserWalletBalance userWalletBalance;
+//    @OneToOne
+//    @JoinColumn(name = "user_wallet_balance_id", referencedColumnName = "id")
+//    private UserWalletBalance userWalletBalance;
 }
