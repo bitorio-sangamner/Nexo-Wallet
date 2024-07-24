@@ -20,12 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Service
@@ -40,6 +39,9 @@ public class SubUserServiceImpl implements SubUserService {
 
     @Autowired
     public ObjectMapper objectMapper;
+
+    @Autowired
+    public PasswordEncoder passwordEncoder;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -71,7 +73,7 @@ public class SubUserServiceImpl implements SubUserService {
             if (subUserResponse != null && subUserResponse.getResult() != null) {
                 SubUserResponse.Result result = subUserResponse.getResult();
                 if (result != null && result.getUid() != null && result.getUsername() != null && result.getMemberType() != 0 && result.getStatus() != 0 && result.getRemark() != null) {
-                    String message = this.saveDetailsOfSubAccount(result,email);
+                    String message = this.saveDetailsOfSubAccount(result,email,password);
                     log.info("Message: {}", message);
                     if ("SubUser created and saved successfully!!".equals(message)) {
                         return subUserResponse;
@@ -230,7 +232,7 @@ public class SubUserServiceImpl implements SubUserService {
      * @param result The SubUserResponse.Result object containing the sub-account details.
      * @return A message indicating the result of the save operation.
      */
-    public String saveDetailsOfSubAccount(SubUserResponse.Result result,String userEmail) {
+    public String saveDetailsOfSubAccount(SubUserResponse.Result result,String userEmail,String password) {
         if (result == null) {
             return "Result map is null.";
         }
@@ -244,8 +246,10 @@ public class SubUserServiceImpl implements SubUserService {
             String remark = result.getRemark();
             String email=userEmail;
 
+            String encodedPassword = passwordEncoder.encode(password);
+
             // Create a new SubUser entity
-            SubUser subUserToSave = new SubUser(userId, userName, memberType, status, remark,email);
+            SubUser subUserToSave = new SubUser(userId, userName,encodedPassword, memberType, status, remark,email);
 
             // Save the SubUser entity to the repository
             subUserRepository.save(subUserToSave);

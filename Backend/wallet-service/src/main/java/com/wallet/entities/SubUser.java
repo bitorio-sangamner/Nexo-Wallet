@@ -19,6 +19,7 @@ public class SubUser {
     private String email;
     private String userId;
     private String username;
+    private String password;
     private int memberType;
     private int status;
     private String remark;
@@ -28,10 +29,11 @@ public class SubUser {
     private SubUserApiKey subUserApiKey;
 
 
-    public SubUser(String userId,String username,int memberType,int status,String remark,String email)
+    public SubUser(String userId,String username,String password,int memberType,int status,String remark,String email)
     {
         this.userId=userId;
         this.username=username;
+        this.password=password;
         this.memberType=memberType;
         this.status=status;
         this.remark=remark;

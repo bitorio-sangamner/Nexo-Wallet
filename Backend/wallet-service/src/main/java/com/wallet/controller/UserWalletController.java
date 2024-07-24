@@ -44,8 +44,12 @@ public class UserWalletController {
     public ResponseEntity<Object> getUserWallet() {
         // Get the email from SecurityContextHolder
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Map<String, List<UserWalletResponseDto>>userWalletResponseDtoMap=this.userWalletService.getWallet("vaishnavishinde93076@gmail.com");
-          return ResponseEntity.ok(userWalletResponseDtoMap);
+        Map<String, List<UserWalletResponseDto>>userWalletResponseDtoMap=this.userWalletService.getWallet(email);
+
+             var apiResponse = new ApiResponse(
+               "User wallet data",
+                "success",userWalletResponseDtoMap);
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
 
     }
 
@@ -53,9 +57,15 @@ public class UserWalletController {
     public ResponseEntity<Object>getWallet(@PathVariable String currencyAbb)
     {
         // Get the email from SecurityContextHolder
-        //String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Map<String,UserWalletResponseDto> userWalletResponseDtoMap=userWalletService.getWallet("vaishnavishinde93076@gmail.com",currencyAbb);
-        return ResponseEntity.ok(userWalletResponseDtoMap);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Map<String,UserWalletResponseDto> userWalletResponseDtoMap=userWalletService.getWallet(email,currencyAbb);
+
+        //return ResponseEntity.ok(userWalletResponseDtoMap);
+
+        var apiResponse = new ApiResponse(
+                "User wallet data",
+                "success",userWalletResponseDtoMap);
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
 }

@@ -340,24 +340,29 @@ public class UserWalletServiceImpl implements UserWalletService {
     }
 
 
-    @Override
-    public Map<String, List<UserWalletResponseDto>> getWallet(String userName) {
+//    @Override
+//    public Map<String, List<UserWalletResponseDto>> getWallet(String userName) {
+//
 //        List<UserWallet> userWalletList = this.userWalletRepository.findByUserEmail(userName);
 //
 //        // Prepare response map
-//        Map<String, UserWalletResponseDto> responseMap = new HashMap<>();
+//        Map<String, List<UserWalletResponseDto>> responseMap = new HashMap<>();
 //        if (userWalletList.isEmpty()) {
-//            throw new RuntimeException("No wallet found for the given email and currency abbreviation");
+//            throw new RuntimeException("No wallet found for the given email");
 //        }
 //
 //        userWalletList.forEach(userWallet -> {
 //            // Process userWallet
 //            System.out.println(userWallet.getWalletAddress());
 //            List<WalletDetailsDto> walletDetailsDtoList = new ArrayList<>();
-//            WalletDetailsDto walletDetailsDto=new WalletDetailsDto(userWallet.getWalletAddress(),userWallet.getCurrency().getCurrencyAbb(),userWallet.getCurrency().getBlockchainNetwork());
+//            WalletDetailsDto walletDetailsDto = new WalletDetailsDto(
+//                    userWallet.getWalletAddress(),
+//                    userWallet.getCurrency().getCurrencyAbb(),
+//                    userWallet.getCurrency().getBlockchainNetwork()
+//            );
 //            walletDetailsDtoList.add(walletDetailsDto);
 //
-//            UserWalletBalance userWalletBalance=userWalletBalanceService.getWalletBalance(userName,userWallet.getCurrency().getCurrencyAbb());
+//            UserWalletBalance userWalletBalance = userWalletBalanceService.getWalletBalance(userName, userWallet.getCurrency().getCurrencyAbb());
 //            // Create wallet balance details DTO
 //            WalletBalanceDetailsDto walletBalanceDetailsDto = new WalletBalanceDetailsDto(
 //                    userWalletBalance.getFundingWallet(),
@@ -366,96 +371,174 @@ public class UserWalletServiceImpl implements UserWalletService {
 //            UserWalletResponseDto responseDto = UserWalletResponseDto.builder()
 //                    .listOfUserWalletDetails(walletDetailsDtoList)
 //                    .userId(userWallet.getUserId())
-//                    //.currencyAbb(userWalletBalance.getCurrencyAbb())
-//                    //.blockChainNetwork(userWallets.get(0).getCurrency().getBlockchainNetwork())
 //                    .userWalletBalanceDetails(walletBalanceDetailsDto)
 //                    .build();
 //
-//            responseMap.put(userWallet.getCurrency().getCurrencyAbb(), responseDto);
+//            // Add the responseDto to the list associated with the currency abbreviation
+//            // Check if the responseMap already has a list for the current currency abbreviation
+//            if (!responseMap.containsKey(userWallet.getCurrency().getCurrencyAbb())) {
 //
+//                // If not, create a new list and put it in the map
+//                responseMap.put(userWallet.getCurrency().getCurrencyAbb(), new ArrayList<>());
+//            }
+//
+////            // Get the list associated with the current currency abbreviation
+////            List<UserWalletResponseDto> responseDtoList = responseMap.get(userWallet.getCurrency().getCurrencyAbb());
+////           // Add the responseDto to this list
+////            responseDtoList.add(responseDto);
+//
+//            // Now add the responseDto to the list for the current currency abbreviation
+//            responseMap.get(userWallet.getCurrency().getCurrencyAbb()).add(responseDto);
 //        });
 //
 //        return responseMap;
-
-        List<UserWallet> userWalletList = this.userWalletRepository.findByUserEmail(userName);
-
-        // Prepare response map
-        Map<String, List<UserWalletResponseDto>> responseMap = new HashMap<>();
-        if (userWalletList.isEmpty()) {
-            throw new RuntimeException("No wallet found for the given email");
-        }
-
-        userWalletList.forEach(userWallet -> {
-            // Process userWallet
-            System.out.println(userWallet.getWalletAddress());
-            List<WalletDetailsDto> walletDetailsDtoList = new ArrayList<>();
-            WalletDetailsDto walletDetailsDto = new WalletDetailsDto(
-                    userWallet.getWalletAddress(),
-                    userWallet.getCurrency().getCurrencyAbb(),
-                    userWallet.getCurrency().getBlockchainNetwork()
-            );
-            walletDetailsDtoList.add(walletDetailsDto);
-
-            UserWalletBalance userWalletBalance = userWalletBalanceService.getWalletBalance(userName, userWallet.getCurrency().getCurrencyAbb());
-            // Create wallet balance details DTO
-            WalletBalanceDetailsDto walletBalanceDetailsDto = new WalletBalanceDetailsDto(
-                    userWalletBalance.getFundingWallet(),
-                    userWalletBalance.getTradingWallet()
-            );
-            UserWalletResponseDto responseDto = UserWalletResponseDto.builder()
-                    .listOfUserWalletDetails(walletDetailsDtoList)
-                    .userId(userWallet.getUserId())
-                    .userWalletBalanceDetails(walletBalanceDetailsDto)
-                    .build();
-
-            // Add the responseDto to the list associated with the currency abbreviation
-            responseMap.computeIfAbsent(userWallet.getCurrency().getCurrencyAbb(), k -> new ArrayList<>()).add(responseDto);
-        });
-
-        return responseMap;
-    }
+//    }
 
     @Override
-    public Map<String,UserWalletResponseDto> getWallet(String userName, String currencyAbb) {
+    public Map<String, List<UserWalletResponseDto>> getWallet(String userName) {
+        try {
+            List<UserWallet> userWalletList = userWalletRepository.findByUserEmail(userName);
+            if (userWalletList.isEmpty()) {
+                log.info("No wallet found for email: {}", userName);
+                throw new ResourceNotFoundException("No wallet found for the given email: " + userName,false);
+            }
 
-        // Fetch user wallets by email and currency abbreviation
-        List<UserWallet> userWallets = userWalletRepository.findByUserEmailAndCurrencyAbb(userName, currencyAbb);
+            Map<String, List<UserWalletResponseDto>> responseMap = new HashMap<>();
+            for (UserWallet userWallet : userWalletList) {
+                processUserWallet(userWallet, responseMap);
+            }
 
-        if (userWallets.isEmpty()) {
-            throw new RuntimeException("No wallet found for the given email and currency abbreviation");
+            return responseMap;
+
+        } catch (Exception e) {
+            log.error("An error occurred while retrieving the wallet for user: {}", userName, e);
+            throw new RuntimeException("An error occurred while retrieving the wallet for user: " + userName, e);
         }
+    }
 
-        // Fetch user wallet balance for the given user and currency abbreviation
-        UserWalletBalance userWalletBalance = userWalletBalanceService.getWalletBalance(userName, currencyAbb);
+    private void processUserWallet(UserWallet userWallet, Map<String, List<UserWalletResponseDto>> responseMap) {
+        log.info("Processing wallet for address: {}", userWallet.getWalletAddress());
 
-        List<WalletDetailsDto> walletDetailsDtoList = userWallets.stream()
-                .map(uw -> new WalletDetailsDto(
-                        uw.getWalletAddress(),
-                        uw.getCurrency().getCurrencyAbb(),   // Assuming getCurrencyAbb() exists in the Currency class
-                        uw.getCurrency().getBlockchainNetwork()  // Assuming getBlockchainNetwork() exists in the Currency class
-                ))
-                .collect(Collectors.toList());
+        List<WalletDetailsDto> walletDetailsDtoList = new ArrayList<>();
+        WalletDetailsDto walletDetailsDto = new WalletDetailsDto(
+                userWallet.getWalletAddress(),
+                userWallet.getCurrency().getCurrencyAbb(),
+                userWallet.getCurrency().getBlockchainNetwork()
+        );
+        walletDetailsDtoList.add(walletDetailsDto);
 
-        // Create wallet balance details DTO
+        UserWalletBalance userWalletBalance = userWalletBalanceService.getWalletBalance(
+                userWallet.getUserEmail(), userWallet.getCurrency().getCurrencyAbb()
+        );
+
         WalletBalanceDetailsDto walletBalanceDetailsDto = new WalletBalanceDetailsDto(
                 userWalletBalance.getFundingWallet(),
                 userWalletBalance.getTradingWallet()
         );
 
-        // Create response DTO
         UserWalletResponseDto responseDto = UserWalletResponseDto.builder()
                 .listOfUserWalletDetails(walletDetailsDtoList)
-                .userId(userWallets.get(0).getUserId())
-                //.currencyAbb(userWalletBalance.getCurrencyAbb())
-                //.blockChainNetwork(userWallets.get(0).getCurrency().getBlockchainNetwork())
+                .userId(userWallet.getUserId())
                 .userWalletBalanceDetails(walletBalanceDetailsDto)
                 .build();
+        if (!responseMap.containsKey(userWallet.getCurrency().getCurrencyAbb())) {
 
-        // Prepare response map
-        Map<String, UserWalletResponseDto> responseMap = new HashMap<>();
-        responseMap.put(currencyAbb, responseDto);
+                // If not, create a new list and put it in the map
+                responseMap.put(userWallet.getCurrency().getCurrencyAbb(), new ArrayList<>());
+            }
+        // Now add the responseDto to the list for the current currency abbreviation
+           responseMap.get(userWallet.getCurrency().getCurrencyAbb()).add(responseDto);
+        responseMap.computeIfAbsent(userWallet.getCurrency().getCurrencyAbb(), k -> new ArrayList<>()).add(responseDto);
+    }
 
-        return responseMap;
+//    @Override
+//    public Map<String,UserWalletResponseDto> getWallet(String userName, String currencyAbb) {
+//
+//        // Fetch user wallets by email and currency abbreviation
+//        List<UserWallet> userWallets = userWalletRepository.findByUserEmailAndCurrencyAbb(userName, currencyAbb);
+//
+//        if (userWallets.isEmpty()) {
+//            throw new RuntimeException("No wallet found for the given email and currency abbreviation");
+//        }
+//
+//        // Fetch user wallet balance for the given user and currency abbreviation
+//        UserWalletBalance userWalletBalance = userWalletBalanceService.getWalletBalance(userName, currencyAbb);
+//
+//        List<WalletDetailsDto> walletDetailsDtoList = userWallets.stream()
+//                .map(uw -> new WalletDetailsDto(
+//                        uw.getWalletAddress(),
+//                        uw.getCurrency().getCurrencyAbb(),   // Assuming getCurrencyAbb() exists in the Currency class
+//                        uw.getCurrency().getBlockchainNetwork()  // Assuming getBlockchainNetwork() exists in the Currency class
+//                ))
+//                .collect(Collectors.toList());
+//
+//        // Create wallet balance details DTO
+//        WalletBalanceDetailsDto walletBalanceDetailsDto = new WalletBalanceDetailsDto(
+//                userWalletBalance.getFundingWallet(),
+//                userWalletBalance.getTradingWallet()
+//        );
+//
+//        // Create response DTO
+//        UserWalletResponseDto responseDto = UserWalletResponseDto.builder()
+//                .listOfUserWalletDetails(walletDetailsDtoList)
+//                .userId(userWallets.get(0).getUserId())
+//                //.currencyAbb(userWalletBalance.getCurrencyAbb())
+//                //.blockChainNetwork(userWallets.get(0).getCurrency().getBlockchainNetwork())
+//                .userWalletBalanceDetails(walletBalanceDetailsDto)
+//                .build();
+//
+//        // Prepare response map
+//        Map<String, UserWalletResponseDto> responseMap = new HashMap<>();
+//        responseMap.put(currencyAbb, responseDto);
+//
+//        return responseMap;
+//    }
+
+    @Override
+    public Map<String, UserWalletResponseDto> getWallet(String userName, String currencyAbb) {
+        try {
+            // Fetch user wallets by email and currency abbreviation
+            List<UserWallet> userWallets = userWalletRepository.findByUserEmailAndCurrencyAbb(userName, currencyAbb);
+
+            if (userWallets.isEmpty()) {
+                log.info("No wallet found for email: {} and currency: {}", userName, currencyAbb);
+                throw new ResourceNotFoundException("No wallet found for the given email and currency abbreviation",false);
+            }
+
+            // Fetch user wallet balance for the given user and currency abbreviation
+            UserWalletBalance userWalletBalance = userWalletBalanceService.getWalletBalance(userName, currencyAbb);
+
+            List<WalletDetailsDto> walletDetailsDtoList = userWallets.stream()
+                    .map(uw -> new WalletDetailsDto(
+                            uw.getWalletAddress(),
+                            uw.getCurrency().getCurrencyAbb(),
+                            uw.getCurrency().getBlockchainNetwork()
+                    ))
+                    .collect(Collectors.toList());
+
+            // Create wallet balance details DTO
+            WalletBalanceDetailsDto walletBalanceDetailsDto = new WalletBalanceDetailsDto(
+                    userWalletBalance.getFundingWallet(),
+                    userWalletBalance.getTradingWallet()
+            );
+
+            // Create response DTO
+            UserWalletResponseDto responseDto = UserWalletResponseDto.builder()
+                    .listOfUserWalletDetails(walletDetailsDtoList)
+                    .userId(userWallets.get(0).getUserId())
+                    .userWalletBalanceDetails(walletBalanceDetailsDto)
+                    .build();
+
+            // Prepare response map
+            Map<String, UserWalletResponseDto> responseMap = new HashMap<>();
+            responseMap.put(currencyAbb, responseDto);
+
+            return responseMap;
+
+        } catch (Exception e) {
+            log.error("Error occurred while fetching wallet for user: {} and currency: {}", userName, currencyAbb, e);
+            throw new RuntimeException("An error occurred while retrieving the wallet", e);
+        }
     }
 
     public UserWalletDto walletToDto(UserWallet wallet) {

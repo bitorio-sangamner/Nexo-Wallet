@@ -29,8 +29,8 @@ public class SecurityConfig {
                  .csrf(AbstractHttpConfigurer::disable)
                  .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/subUser/createSubUserManually").authenticated()
-                         .requestMatchers("/api/wallet/getWallet").permitAll()
-                         .requestMatchers("/api/wallet/getWallet/{currencyAbb}").permitAll()
+                         .requestMatchers("/api/wallet/getWallet").authenticated()
+                         .requestMatchers("/api/wallet/getWallet/{currencyAbb}").authenticated()
                          .requestMatchers("/api/subUser/createSubUserApiKeyOnBybit").permitAll()
                         .requestMatchers("api/subUser/create/{userId}/{email}").permitAll()
                          .requestMatchers("/api/wallet/create/{userId}/{email}/{subMemberId}").permitAll()
